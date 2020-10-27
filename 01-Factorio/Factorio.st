@@ -1,5 +1,5 @@
-!classDefinition: #CintaUno category: 'Factorio'!
-DenotativeObject subclass: #CintaUno
+!classDefinition: #CintaDeTransporteDos category: 'Factorio'!
+DenotativeObject subclass: #CintaDeTransporteDos
 	instanceVariableNames: ''
 	classVariableNames: ''
 	poolDictionaries: ''
@@ -7,40 +7,87 @@ DenotativeObject subclass: #CintaUno
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
-!classDefinition: 'CintaUno class' category: 'Factorio'!
-CintaUno class
+!classDefinition: 'CintaDeTransporteDos class' category: 'Factorio'!
+CintaDeTransporteDos class
 	instanceVariableNames: 'destino contenido'!
 
-!CintaUno class methodsFor: 'as yet unclassified' stamp: 'FL 10/24/2020 16:34:08'!
+!CintaDeTransporteDos class methodsFor: 'as yet unclassified' stamp: 'FL 10/27/2020 19:43:14'!
 agregar: unMineral
 	contenido add: unMineral.! !
 
-!CintaUno class methodsFor: 'as yet unclassified' stamp: 'FL 10/24/2020 16:42:50'!
+!CintaDeTransporteDos class methodsFor: 'as yet unclassified' stamp: 'FL 10/27/2020 19:43:14'!
 agregarTodos: unContenido
 	"Atajo para trasladar todo un contenido de uno a otro."
 	contenido addAll: unContenido.! !
 
-!CintaUno class methodsFor: 'as yet unclassified' stamp: 'FL 10/24/2020 16:40:32'!
+!CintaDeTransporteDos class methodsFor: 'as yet unclassified' stamp: 'FL 10/27/2020 19:43:15'!
 cantidadDeMenas
 	^contenido size.! !
 
-!CintaUno class methodsFor: 'as yet unclassified' stamp: 'FL 10/24/2020 16:31:35'!
+!CintaDeTransporteDos class methodsFor: 'as yet unclassified' stamp: 'FL 10/27/2020 19:43:15'!
 conectarA: unDestino
 	destino := unDestino.! !
 
-!CintaUno class methodsFor: 'as yet unclassified' stamp: 'FL 10/24/2020 16:48:12'!
+!CintaDeTransporteDos class methodsFor: 'as yet unclassified' stamp: 'FL 10/27/2020 19:47:53'!
+initializeCollaboratorsFromFile
+	"Auto generated method for loading purposes - Do not modify it"
+
+	destino := CintaDeTransporteUno.
+	contenido := ((OrderedCollection new)).! !
+
+!CintaDeTransporteDos class methodsFor: 'as yet unclassified' stamp: 'FL 10/27/2020 19:43:15'!
+trasladarMinerales
+	destino agregarTodos: contenido.
+	self vaciar.! !
+
+!CintaDeTransporteDos class methodsFor: 'as yet unclassified' stamp: 'FL 10/27/2020 19:43:15'!
+vaciar
+	contenido := OrderedCollection new.! !
+
+
+!classDefinition: #CintaDeTransporteUno category: 'Factorio'!
+DenotativeObject subclass: #CintaDeTransporteUno
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'Factorio'!
+
+"-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
+
+!classDefinition: 'CintaDeTransporteUno class' category: 'Factorio'!
+CintaDeTransporteUno class
+	instanceVariableNames: 'destino contenido'!
+
+!CintaDeTransporteUno class methodsFor: 'as yet unclassified' stamp: 'FL 10/24/2020 16:34:08'!
+agregar: unMineral
+	contenido add: unMineral.! !
+
+!CintaDeTransporteUno class methodsFor: 'as yet unclassified' stamp: 'FL 10/24/2020 16:42:50'!
+agregarTodos: unContenido
+	"Atajo para trasladar todo un contenido de uno a otro."
+	contenido addAll: unContenido.! !
+
+!CintaDeTransporteUno class methodsFor: 'as yet unclassified' stamp: 'FL 10/24/2020 16:40:32'!
+cantidadDeMenas
+	^contenido size.! !
+
+!CintaDeTransporteUno class methodsFor: 'as yet unclassified' stamp: 'FL 10/24/2020 16:31:35'!
+conectarA: unDestino
+	destino := unDestino.! !
+
+!CintaDeTransporteUno class methodsFor: 'as yet unclassified' stamp: 'FL 10/27/2020 19:47:53'!
 initializeCollaboratorsFromFile
 	"Auto generated method for loading purposes - Do not modify it"
 
 	destino := Contenedor.
 	contenido := ((OrderedCollection new)).! !
 
-!CintaUno class methodsFor: 'as yet unclassified' stamp: 'FL 10/24/2020 16:44:44'!
+!CintaDeTransporteUno class methodsFor: 'as yet unclassified' stamp: 'FL 10/24/2020 16:44:44'!
 trasladarMinerales
 	destino agregarTodos: contenido.
 	self vaciar.! !
 
-!CintaUno class methodsFor: 'as yet unclassified' stamp: 'FL 10/24/2020 16:38:00'!
+!CintaDeTransporteUno class methodsFor: 'as yet unclassified' stamp: 'FL 10/24/2020 16:38:00'!
 vaciar
 	contenido := OrderedCollection new.! !
 
@@ -75,7 +122,7 @@ cantidadDe: unaMenaDeMuestra
 cantidadDeMenas
 	^contenido size.! !
 
-!Contenedor class methodsFor: 'as yet unclassified' stamp: 'FL 10/24/2020 16:48:13'!
+!Contenedor class methodsFor: 'as yet unclassified' stamp: 'FL 10/27/2020 19:47:54'!
 initializeCollaboratorsFromFile
 	"Auto generated method for loading purposes - Do not modify it"
 
@@ -107,11 +154,39 @@ conectarA: unDestino
 extraer
 	destino agregar: #carbon.! !
 
-!ExtractorDeCarbon class methodsFor: 'as yet unclassified' stamp: 'FL 10/24/2020 16:48:13'!
+!ExtractorDeCarbon class methodsFor: 'as yet unclassified' stamp: 'FL 10/27/2020 19:47:54'!
 initializeCollaboratorsFromFile
 	"Auto generated method for loading purposes - Do not modify it"
 
-	destino := CintaUno.! !
+	destino := CintaDeTransporteUno.! !
+
+
+!classDefinition: #ExtractorDeHierro category: 'Factorio'!
+DenotativeObject subclass: #ExtractorDeHierro
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'Factorio'!
+
+"-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
+
+!classDefinition: 'ExtractorDeHierro class' category: 'Factorio'!
+ExtractorDeHierro class
+	instanceVariableNames: 'destino'!
+
+!ExtractorDeHierro class methodsFor: 'as yet unclassified' stamp: 'FL 10/27/2020 19:43:28'!
+conectarA: unDestino
+	destino := unDestino.! !
+
+!ExtractorDeHierro class methodsFor: 'as yet unclassified' stamp: 'FL 10/27/2020 19:43:41'!
+extraer
+	destino agregar: #hierro.! !
+
+!ExtractorDeHierro class methodsFor: 'as yet unclassified' stamp: 'FL 10/27/2020 19:47:54'!
+initializeCollaboratorsFromFile
+	"Auto generated method for loading purposes - Do not modify it"
+
+	destino := CintaDeTransporteDos.! !
 
 
 !classDefinition: #FactorioTest category: 'Factorio'!
@@ -150,24 +225,24 @@ test01ExtractorCaja
 	Assert that: Contenedor cantidadDeMenas isEqualTo: 1.! !
 
 
-!FactorioTest class methodsFor: 'escenario 2' stamp: 'FL 10/24/2020 16:36:26'!
+!FactorioTest class methodsFor: 'escenario 2' stamp: 'FL 10/27/2020 19:43:00'!
 configurarCircuitoExtractorCintaCaja
 	Contenedor vaciar.
 	"No se olviden de vaciar la cinta tambien!!"
-	CintaUno vaciar.
+	CintaDeTransporteUno vaciar.
 	"Conectamos el extractor a la cinta, luego conectamos la cinta a la caja"
-	ExtractorDeCarbon conectarA: CintaUno.
-	CintaUno conectarA: Contenedor.
+	ExtractorDeCarbon conectarA: CintaDeTransporteUno.
+	CintaDeTransporteUno conectarA: Contenedor.
 ! !
 
-!FactorioTest class methodsFor: 'escenario 2' stamp: 'FL 10/24/2020 16:36:58'!
+!FactorioTest class methodsFor: 'escenario 2' stamp: 'FL 10/27/2020 19:43:00'!
 hacerAndarCircuitoExtractorCintaCaja
 	"Hacemos andar el extractor, asi deja un carbon en la cinta."
 	ExtractorDeCarbon extraer.
 	"Luego hacemos andar la cinta (con algun mensaje) y deberia dejar el carbon en la caja.	"
-	CintaUno trasladarMinerales.! !
+	CintaDeTransporteUno trasladarMinerales.! !
 
-!FactorioTest class methodsFor: 'escenario 2' stamp: 'FL 10/24/2020 16:37:23'!
+!FactorioTest class methodsFor: 'escenario 2' stamp: 'FL 10/27/2020 19:43:00'!
 test02ExtractorCintaCaja
 	self configurarCircuitoExtractorCintaCaja.
 	
@@ -176,31 +251,38 @@ test02ExtractorCintaCaja
 	Assert that: (Contenedor cantidadDe: #carbon) isEqualTo: 1.
 	Assert that: Contenedor cantidadDeMenas isEqualTo: 1.
 	"Tambien tenemos que chequear que en la cinta no haya nada. Cero carbon."
-	Assert that: CintaUno cantidadDeMenas isEqualTo: 0.! !
+	Assert that: CintaDeTransporteUno cantidadDeMenas isEqualTo: 0.! !
 
 
-!FactorioTest class methodsFor: 'escenario 3' stamp: 'SF 10/23/2020 01:01:20'!
+!FactorioTest class methodsFor: 'escenario 3' stamp: 'FL 10/27/2020 19:45:24'!
 configurarCircuitoExtractorExtractorCintaCintaCaja
-
 	Contenedor vaciar.
 	"Además de vaciar el Contenedor (arriba) también vaciamos las dos cintas"
+	CintaDeTransporteUno vaciar.
+	CintaDeTransporteDos vaciar.
 	"Conectamos el extractor de carbon a una de las cintas"
+	ExtractorDeCarbon conectarA: CintaDeTransporteUno.
 	"Conectamos el extractor de hierro a la otra cinta"
+	ExtractorDeHierro conectarA: CintaDeTransporteDos.
 	"Ahora conectamos la primer cinta al Contenedor"
+	CintaDeTransporteUno conectarA: Contenedor.
 	"Y conectamos la segunda cinta a la primer cinta"
-	
+	CintaDeTransporteDos conectarA: CintaDeTransporteUno.
 ! !
 
-!FactorioTest class methodsFor: 'escenario 3' stamp: 'SF 10/23/2020 01:02:57'!
+!FactorioTest class methodsFor: 'escenario 3' stamp: 'FL 10/27/2020 19:46:21'!
 hacerAndarCircuitoExtractorExtractorCintaCintaCaja
-	
 	"Hacemos andar el extractor, asi deja un carbon en la cinta.
 	Lo mismo con el otro extractor, asi deja una mena de hierro en la otra cinta.
 	Hacemos andar la cinta con la mena de hierro, asi la deposita en la cinta que tiene el carbon.
 	Ahora podemos hacer andar la ultima cinta, la que recibió primero el carbon 
-	y ahora tambien tiene el hierro y que deje todo en el Contenedor."! !
+	y ahora tambien tiene el hierro y que deje todo en el Contenedor."
+	ExtractorDeCarbon extraer.
+	ExtractorDeHierro extraer.
+	CintaDeTransporteDos trasladarMinerales.
+	CintaDeTransporteUno trasladarMinerales.! !
 
-!FactorioTest class methodsFor: 'escenario 3' stamp: 'SF 10/23/2020 01:03:37'!
+!FactorioTest class methodsFor: 'escenario 3' stamp: 'FL 10/27/2020 19:46:57'!
 test03ExtractorExtractorCintaCintaCaja
 	self configurarCircuitoExtractorExtractorCintaCintaCaja.
 	
@@ -209,8 +291,12 @@ test03ExtractorExtractorCintaCintaCaja
 	Assert that: (Contenedor cantidadDe: #carbon) isEqualTo: 1.
 	Assert that: (Contenedor cantidadDe: #hierro) isEqualTo: 1.
 	Assert that: Contenedor cantidadDeMenas isEqualTo: 2.
-	"Tambien tenemos que chequear que no haya nada en las cintas"! !
+	"Tambien tenemos que chequear que no haya nada en las cintas"
+	Assert that: CintaDeTransporteUno cantidadDeMenas isEqualTo: 0.
+	Assert that: CintaDeTransporteDos cantidadDeMenas isEqualTo: 0.! !
 
-CintaUno initializeAfterFileIn!
+CintaDeTransporteDos initializeAfterFileIn!
+CintaDeTransporteUno initializeAfterFileIn!
 Contenedor initializeAfterFileIn!
 ExtractorDeCarbon initializeAfterFileIn!
+ExtractorDeHierro initializeAfterFileIn!
