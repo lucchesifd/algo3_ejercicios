@@ -45,20 +45,20 @@ test02RemovingCustomerShouldNotTakeMoreThan100Milliseconds
 	
 ! !
 
-!CustomerBookTest methodsFor: 'tests' stamp: 'FL 11/2/2020 21:29:25'!
+!CustomerBookTest methodsFor: 'tests' stamp: 'FL 11/5/2020 19:18:32'!
 test03CanNotAddACustomerWithEmptyName 
 
 	| customerBook |
 			
 	customerBook := CustomerBook new.
 
-	self theCode: [ customerBook addCustomerNamed: ''. self fail. ]
+	self theCode: [ customerBook addCustomerNamed: ''. ]
 		shouldCause: Error
 		withTheConditions: [ :anError | 
 			self assert: anError messageText = CustomerBook customerCanNotBeEmptyErrorMessage.
 			self assert: customerBook isEmpty ].! !
 
-!CustomerBookTest methodsFor: 'tests' stamp: 'FL 11/2/2020 21:16:41'!
+!CustomerBookTest methodsFor: 'tests' stamp: 'FL 11/5/2020 19:18:21'!
 test04CanNotRemoveAnInvalidCustomer
 	
 	| customerBook johnLennon |
@@ -67,7 +67,7 @@ test04CanNotRemoveAnInvalidCustomer
 	johnLennon := 'John Lennon'.
 	customerBook addCustomerNamed: johnLennon.
 	
-	self theCode: [ customerBook removeCustomerNamed: 'Paul McCartney'. self fail ]
+	self theCode: [ customerBook removeCustomerNamed: 'Paul McCartney'. ]
 		shouldCause: NotFound
 		withTheConditions: [ :anError | 
 			self assert: customerBook numberOfCustomers = 1.
@@ -140,15 +140,16 @@ test08CanNotSuspendAnAlreadySuspendedCustomer
 ! !
 
 
-!CustomerBookTest methodsFor: 'test helpers' stamp: 'FL 11/2/2020 21:14:57'!
-theCode: errorCausingCode shouldCause: aClassIdentifier withTheConditions: conditionCode
+!CustomerBookTest methodsFor: 'test helpers' stamp: 'FL 11/5/2020 19:21:04'!
+theCode: errorCausingCode shouldCause: anErrorClassIdentifier withTheConditions: conditionCode
 
-	errorCausingCode
-		on: aClassIdentifier 
+	[errorCausingCode value.
+	 self fail. "The error didn't occur."]
+		on: anErrorClassIdentifier 
 		do: conditionCode.! !
 
-!CustomerBookTest methodsFor: 'test helpers' stamp: 'FL 11/2/2020 21:01:32'!
-theCode: someCode shouldRunInLessThan: aTime
+!CustomerBookTest methodsFor: 'test helpers' stamp: 'FL 11/7/2020 02:35:11'!
+theCode: someCode shouldRunInLessThan: aTimeLimit
 
 	| millisecondsBeforeRunning millisecondsAfterRunning |
 	
@@ -156,7 +157,7 @@ theCode: someCode shouldRunInLessThan: aTime
 	someCode value.
 	millisecondsAfterRunning := Time millisecondClockValue * millisecond.
 	
-	self assert: (millisecondsAfterRunning-millisecondsBeforeRunning) < aTime.
+	self assert: (millisecondsAfterRunning-millisecondsBeforeRunning) < aTimeLimit.
 	
 ! !
 
@@ -177,9 +178,9 @@ theCustomerBookShouldHaveNoCustomers: aCustomerBook
 		andActiveCustomers: 0
 		andSuspendedCustomers: 0.! !
 
-!CustomerBookTest methodsFor: 'test helpers' stamp: 'FL 11/2/2020 21:36:12'!
+!CustomerBookTest methodsFor: 'test helpers' stamp: 'FL 11/5/2020 19:17:40'!
 verifyThat: aPerson cannotBeSuspendedOn: aCustomerBook andShouldInclude: anIncludedPerson
-	self theCode: [ aCustomerBook suspendCustomerNamed: aPerson. self fail ]
+	self theCode: [ aCustomerBook suspendCustomerNamed: aPerson. ]
 		shouldCause: CantSuspend 
 		withTheConditions: [ :anError | 
 			self assert: aCustomerBook numberOfCustomers = 1.
