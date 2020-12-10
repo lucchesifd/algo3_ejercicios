@@ -202,8 +202,8 @@ test13APortfolioWithMultipleAccountsShouldHaveAllTheRegistersOfAllAccounts
 	self assert: (portfolio hasRegistered: aTransferWithdraw).
 	self assert: (portfolio hasRegistered: aTransferDeposit).! !
 
-!PortfolioTest methodsFor: 'tests' stamp: 'FL 12/9/2020 20:12:39'!
-test14HasRegistersShouldConsiderComposedPortfolios
+!PortfolioTest methodsFor: 'tests' stamp: 'FL 12/10/2020 18:20:50'!
+test14HasRegisteredShouldConsiderComposedPortfolios
 
 	| account portfolio anotherAccount anotherPortfolio aDeposit aTransferDeposit aTransferWithdraw |
 	
@@ -307,7 +307,7 @@ TestCase subclass: #TransferTest
 	poolDictionaries: ''
 	category: 'ServiciosFinancieros-Ejercicio'!
 
-!TransferTest methodsFor: 'as yet unclassified' stamp: 'FL 12/9/2020 20:13:44'!
+!TransferTest methodsFor: 'tests' stamp: 'FL 12/9/2020 20:13:44'!
 test01ATransferShouldUpdateTheBalanceOfBothAccounts
 
 	| senderAccount recipientAccount aWithdrawal |
@@ -323,7 +323,7 @@ test01ATransferShouldUpdateTheBalanceOfBothAccounts
 	self assert: senderAccount balance equals: 50 * peso.
 	self assert: recipientAccount balance equals: 200 * peso.! !
 
-!TransferTest methodsFor: 'as yet unclassified' stamp: 'FL 12/9/2020 20:17:23'!
+!TransferTest methodsFor: 'tests' stamp: 'FL 12/9/2020 20:17:23'!
 test02TheDepositLegShouldBeAbleToObtainItsRespectiveWithdraw
 
 	| senderAccount recipientAccount aWithdrawal aDeposit |
@@ -338,7 +338,7 @@ test02TheDepositLegShouldBeAbleToObtainItsRespectiveWithdraw
 
 	self assert: aDeposit associatedWithdraw equals: aWithdrawal.! !
 
-!TransferTest methodsFor: 'as yet unclassified' stamp: 'FL 12/9/2020 20:17:51'!
+!TransferTest methodsFor: 'tests' stamp: 'FL 12/9/2020 20:17:51'!
 test03TheWithdrawLegShouldBeAbleToObtainItsRespectiveDeposit
 
 	| senderAccount recipientAccount aWithdrawal aDeposit |
@@ -353,7 +353,7 @@ test03TheWithdrawLegShouldBeAbleToObtainItsRespectiveDeposit
 
 	self assert: aWithdrawal associatedDeposit equals: aDeposit.! !
 
-!TransferTest methodsFor: 'as yet unclassified' stamp: 'FL 12/9/2020 20:17:51'!
+!TransferTest methodsFor: 'tests' stamp: 'FL 12/9/2020 20:17:51'!
 test04WithdrawAndDepositShouldBeAbleToObtainThemselves
 
 	| senderAccount recipientAccount aWithdrawal aDeposit |
@@ -369,7 +369,7 @@ test04WithdrawAndDepositShouldBeAbleToObtainThemselves
 	self assert: aWithdrawal associatedWithdraw equals: aWithdrawal.
 	self assert: aDeposit associatedDeposit equals: aDeposit.! !
 
-!TransferTest methodsFor: 'as yet unclassified' stamp: 'FL 12/9/2020 20:16:18'!
+!TransferTest methodsFor: 'tests' stamp: 'FL 12/9/2020 20:16:18'!
 test05AWithdrawLegCannotBeAssociatedToMoreThanOneAccount
 
 	| senderAccount recipientAccount aWithdrawal anotherRecipientAccount |
@@ -464,6 +464,16 @@ AccountTransaction subclass: #TransferDeposit
 	poolDictionaries: ''
 	category: 'ServiciosFinancieros-Ejercicio'!
 
+!TransferDeposit methodsFor: 'association' stamp: 'FL 12/9/2020 20:17:51'!
+associatedDeposit
+	^self.! !
+
+!TransferDeposit methodsFor: 'association' stamp: 'FL 12/9/2020 20:17:23'!
+associatedWithdraw
+	
+	^associatedWithdraw.! !
+
+
 !TransferDeposit methodsFor: 'initialization' stamp: 'FL 12/9/2020 19:02:40'!
 initializeFor: aWithdrawal 
 
@@ -471,21 +481,12 @@ initializeFor: aWithdrawal
 	aWithdrawal associateTo: self.! !
 
 
-!TransferDeposit methodsFor: 'as yet unclassified' stamp: 'FL 12/9/2020 20:17:51'!
-associatedDeposit
-	^self.! !
-
-!TransferDeposit methodsFor: 'as yet unclassified' stamp: 'FL 12/9/2020 20:17:23'!
-associatedWithdraw
-	
-	^associatedWithdraw.! !
-
-!TransferDeposit methodsFor: 'as yet unclassified' stamp: 'FL 12/9/2020 18:50:39'!
+!TransferDeposit methodsFor: 'value' stamp: 'FL 12/9/2020 18:50:39'!
 balanceValue
 
 	^ self value! !
 
-!TransferDeposit methodsFor: 'as yet unclassified' stamp: 'FL 12/9/2020 18:45:22'!
+!TransferDeposit methodsFor: 'value' stamp: 'FL 12/9/2020 18:45:22'!
 value
 	
 	^ associatedWithdraw value.! !
@@ -496,7 +497,7 @@ value
 TransferDeposit class
 	instanceVariableNames: ''!
 
-!TransferDeposit class methodsFor: 'as yet unclassified' stamp: 'FL 12/9/2020 18:40:36'!
+!TransferDeposit class methodsFor: 'instance creation' stamp: 'FL 12/9/2020 18:40:36'!
 for: aDeposit
 
 	^ self new initializeFor: aDeposit ! !
@@ -509,10 +510,22 @@ AccountTransaction subclass: #TransferWithdraw
 	poolDictionaries: ''
 	category: 'ServiciosFinancieros-Ejercicio'!
 
-!TransferWithdraw methodsFor: 'initialization' stamp: 'FL 12/9/2020 18:50:57'!
-balanceValue
+!TransferWithdraw methodsFor: 'association' stamp: 'FL 12/10/2020 18:18:30'!
+associateTo: aDeposit 
+	
+	"Should only be used by TransferDeposit instances"
+	associatedDeposit isNil ifFalse: [self error: self class alreadyAssociatedErrorMessage].
+	associatedDeposit := aDeposit.! !
 
-	^ self value negated.! !
+!TransferWithdraw methodsFor: 'association' stamp: 'FL 12/9/2020 20:17:50'!
+associatedDeposit
+	
+	^associatedDeposit! !
+
+!TransferWithdraw methodsFor: 'association' stamp: 'FL 12/9/2020 20:17:23'!
+associatedWithdraw
+	^self! !
+
 
 !TransferWithdraw methodsFor: 'initialization' stamp: 'FL 12/9/2020 18:48:38'!
 initializeFor: aValue 
@@ -520,22 +533,12 @@ initializeFor: aValue
 	value := aValue.! !
 
 
-!TransferWithdraw methodsFor: 'as yet unclassified' stamp: 'FL 12/9/2020 19:14:59'!
-associateTo: aDeposit 
-	
-	associatedDeposit isNil ifFalse: [self error: self class alreadyAssociatedErrorMessage].
-	associatedDeposit := aDeposit.! !
+!TransferWithdraw methodsFor: 'value' stamp: 'FL 12/9/2020 18:50:57'!
+balanceValue
 
-!TransferWithdraw methodsFor: 'as yet unclassified' stamp: 'FL 12/9/2020 20:17:50'!
-associatedDeposit
-	
-	^associatedDeposit! !
+	^ self value negated.! !
 
-!TransferWithdraw methodsFor: 'as yet unclassified' stamp: 'FL 12/9/2020 20:17:23'!
-associatedWithdraw
-	^self! !
-
-!TransferWithdraw methodsFor: 'as yet unclassified' stamp: 'FL 12/9/2020 18:52:08'!
+!TransferWithdraw methodsFor: 'value' stamp: 'FL 12/9/2020 18:52:08'!
 value
 
 	^value! !
@@ -546,12 +549,13 @@ value
 TransferWithdraw class
 	instanceVariableNames: ''!
 
-!TransferWithdraw class methodsFor: 'as yet unclassified' stamp: 'FL 12/9/2020 19:17:01'!
+!TransferWithdraw class methodsFor: 'error messages' stamp: 'FL 12/9/2020 19:17:01'!
 alreadyAssociatedErrorMessage
 	
 	^'Withdrawal was already deposited on another account'! !
 
-!TransferWithdraw class methodsFor: 'as yet unclassified' stamp: 'FL 12/9/2020 18:51:47'!
+
+!TransferWithdraw class methodsFor: 'instance creation' stamp: 'FL 12/9/2020 18:51:47'!
 for: aValue
  
 	^self new initializeFor: aValue.! !
@@ -599,11 +603,15 @@ Object subclass: #Portfolio
 	poolDictionaries: ''
 	category: 'ServiciosFinancieros-Ejercicio'!
 
-!Portfolio methodsFor: 'initialization' stamp: 'HAW 5/25/2019 12:03:18'!
-initialize
+!Portfolio methodsFor: 'accessing' stamp: 'HAW 5/25/2019 11:49:06'!
+accountsSize
+	
+	^accounts size! !
 
-	accounts := OrderedCollection new.
-	parents := OrderedCollection new.! !
+!Portfolio methodsFor: 'accessing' stamp: 'FL 12/9/2020 19:36:22'!
+balance
+	
+	^accounts sum: [ :anAccount | anAccount balance. ] ifEmpty: [0 * peso].! !
 
 
 !Portfolio methodsFor: 'accounts management' stamp: 'HAW 5/25/2019 12:19:20'!
@@ -614,23 +622,6 @@ add: accountToAdd
 	accounts add: accountToAdd.
 	accountToAdd addedTo: self 
 	! !
-
-
-!Portfolio methodsFor: 'testing' stamp: 'LL 9/20/2020 17:05:33'!
-hasAccount: anAccount
-
-	^accounts includes: anAccount ! !
-
-!Portfolio methodsFor: 'testing' stamp: 'LL 9/20/2020 17:09:01'!
-hasAccounts
-	
-	^accounts isEmpty ! !
-
-
-!Portfolio methodsFor: 'accessing' stamp: 'HAW 5/25/2019 11:49:06'!
-accountsSize
-	
-	^accounts size! !
 
 
 !Portfolio methodsFor: 'composition - private' stamp: 'HAW 5/25/2019 12:17:31'!
@@ -677,12 +668,24 @@ signalCanNotAddAccount
 	self error: self class canNotAddAccountErrorMessage! !
 
 
-!Portfolio methodsFor: 'as yet unclassified' stamp: 'FL 12/9/2020 19:36:22'!
-balance
-	
-	^accounts sum: [ :anAccount | anAccount balance. ] ifEmpty: [0 * peso].! !
+!Portfolio methodsFor: 'initialization' stamp: 'HAW 5/25/2019 12:03:18'!
+initialize
 
-!Portfolio methodsFor: 'as yet unclassified' stamp: 'FL 12/9/2020 20:01:04'!
+	accounts := OrderedCollection new.
+	parents := OrderedCollection new.! !
+
+
+!Portfolio methodsFor: 'testing' stamp: 'LL 9/20/2020 17:05:33'!
+hasAccount: anAccount
+
+	^accounts includes: anAccount ! !
+
+!Portfolio methodsFor: 'testing' stamp: 'LL 9/20/2020 17:09:01'!
+hasAccounts
+	
+	^accounts isEmpty ! !
+
+!Portfolio methodsFor: 'testing' stamp: 'FL 12/9/2020 20:01:04'!
 hasRegistered: aRegister 
 	
 	^accounts anySatisfy: [ :anAccount | anAccount hasRegistered: aRegister ].! !
