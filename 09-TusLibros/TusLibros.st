@@ -5,53 +5,53 @@ TestCase subclass: #BookStoreTests
 	poolDictionaries: ''
 	category: 'TusLibros'!
 
-!BookStoreTests methodsFor: 'tests' stamp: 'FL 2/11/2021 21:28:25'!
+!BookStoreTests methodsFor: 'tests' stamp: 'FL 2/11/2021 18:30:40'!
 test01CheckingIfAnAvailableItemIsInStockShouldWork
 
 	| currentStore |
-	currentStore := self makeStore.
+	currentStore := BookStore withStockFor: (Dictionary with: 12345->1).
 	
 	self assert: (currentStore hasStockOf: 12345).! !
 
-!BookStoreTests methodsFor: 'tests' stamp: 'FL 2/11/2021 21:28:31'!
+!BookStoreTests methodsFor: 'tests' stamp: 'FL 2/11/2021 18:31:01'!
 test02CheckingIfAnUnavailableItemIsInStockShouldAlsoWork
 
 	| currentStore |
-	currentStore := self makeStore.
+	currentStore := BookStore withStockFor: (Dictionary with: 12345->1).
 	
 	self deny: (currentStore hasStockOf: 54321).! !
 
-!BookStoreTests methodsFor: 'tests' stamp: 'FL 2/11/2021 21:28:41'!
+!BookStoreTests methodsFor: 'tests' stamp: 'FL 2/11/2021 18:31:39'!
 test03RetrievingTheStockOfAnAvailableItemShouldWork
 
 	| currentStore |
-	currentStore := self makeStore.
+	currentStore := BookStore withStockFor: (Dictionary with: 12345->1).
 	
-	self assert: 5 equals: (currentStore stockOf: 12345).! !
+	self assert: 1 equals: (currentStore stockOf: 12345).! !
 
-!BookStoreTests methodsFor: 'tests' stamp: 'FL 2/11/2021 21:28:46'!
+!BookStoreTests methodsFor: 'tests' stamp: 'FL 2/11/2021 18:32:03'!
 test04TheStockOfAnUnavailableItemShouldBeZero
 
 	| currentStore |
-	currentStore := self makeStore.
+	currentStore := BookStore withStockFor: (Dictionary with: 12345->1).
 	
 	self assert: 0 equals: (currentStore stockOf: 54321).! !
 
-!BookStoreTests methodsFor: 'tests' stamp: 'FL 2/11/2021 21:28:56'!
+!BookStoreTests methodsFor: 'tests' stamp: 'FL 2/11/2021 18:32:28'!
 test05ReducingTheStockOfAnAvailableItemShouldWork
 
 	| currentStore |
-	currentStore := self makeStore.
+	currentStore := BookStore withStockFor: (Dictionary with: 12345->5).
 	
 	currentStore reduceStockOf: 12345 by: 3.
 	
 	self assert: 2 equals: (currentStore stockOf: 12345).! !
 
-!BookStoreTests methodsFor: 'tests' stamp: 'FL 2/11/2021 21:29:02'!
+!BookStoreTests methodsFor: 'tests' stamp: 'FL 2/11/2021 18:35:55'!
 test06ReducingTheStockOfAnUnavailableItemShouldRaiseAnError
 
 	| currentStore |
-	currentStore := self makeStore.
+	currentStore := BookStore withStockFor: (Dictionary with: 12345->5).
 	
 	self should: [ currentStore reduceStockOf: 54321 by: 5. ]
 		raise: Error - MessageNotUnderstood
@@ -59,11 +59,11 @@ test06ReducingTheStockOfAnUnavailableItemShouldRaiseAnError
 			self assert: (BookStore noStockErrorMessageFor: 54321) equals: anError messageText.
 		].! !
 
-!BookStoreTests methodsFor: 'tests' stamp: 'FL 2/11/2021 21:29:07'!
+!BookStoreTests methodsFor: 'tests' stamp: 'FL 2/11/2021 18:41:40'!
 test07ReducingTheStockTooFarShouldAlsoRaiseAnError
 
 	| currentStore |
-	currentStore := self makeStore.
+	currentStore := BookStore withStockFor: (Dictionary with: 12345->5).
 	
 	self should: [ currentStore reduceStockOf: 12345 by: 7. ]
 		raise: Error - MessageNotUnderstood
@@ -71,54 +71,15 @@ test07ReducingTheStockTooFarShouldAlsoRaiseAnError
 			self assert: (BookStore insufficientStockErrorMessageFor: 12345 atQuantity: 7) equals: anError messageText.
 		].! !
 
-!BookStoreTests methodsFor: 'tests' stamp: 'FL 2/11/2021 21:29:11'!
+!BookStoreTests methodsFor: 'tests' stamp: 'FL 2/11/2021 18:34:03'!
 test08IncreasingTheStockOfAnAvailableItemShouldWork
 
 	| currentStore |
-	currentStore := self makeStore.
+	currentStore := BookStore withStockFor: (Dictionary with: 12345->5).
 	
 	currentStore addStockOf: 12345 by: 3.
 	
 	self assert: 8 equals: (currentStore stockOf: 12345).! !
-
-!BookStoreTests methodsFor: 'tests' stamp: 'FL 2/11/2021 21:29:16'!
-test09RetrievingThePriceOfAnExistingItemWorks
-
-	| currentStore |
-	currentStore := self makeStore.
-	
-	self assert: 250 equals: (currentStore priceOf: 12345).! !
-
-!BookStoreTests methodsFor: 'tests' stamp: 'FL 2/11/2021 21:29:20'!
-test10RetrievingThePriceOfAnUnexistingItemShouldRaiseAnError
-
-	| currentStore |
-	currentStore := self makeStore.
-	
-	self
-		should: [ currentStore priceOf: 54321 ]
-		raise: Error - MessageNotUnderstood
-		withExceptionDo: [:anError |
-			self assert: (BookStore priceNotAvailableErrorFor: 54321) equals: anError messageText.
-		].! !
-
-!BookStoreTests methodsFor: 'tests' stamp: 'FL 2/11/2021 21:28:01'!
-test11UpdatingThePriceOfAnItemWorks
-
-	| currentStore |
-	currentStore := self makeStore.
-	
-	currentStore updatePriceOf: 12345 to: 500.
-	self assert: 500 equals: (currentStore priceOf: 12345).
-	
-	currentStore updatePriceOf: 54321 to: 100.
-	self assert: 100 equals: (currentStore priceOf: 54321).! !
-
-
-!BookStoreTests methodsFor: 'tests - private' stamp: 'FL 2/11/2021 21:28:10'!
-makeStore
-
-	^BookStore withStockFor: (Dictionary with: 12345->5) withPrices: (Dictionary with: 12345->250).! !
 
 
 !classDefinition: #ShoppingCartTests category: 'TusLibros'!
@@ -131,62 +92,55 @@ TestCase subclass: #ShoppingCartTests
 Hacer tests de contenidos del carrito y tests de si un libro existe...?!
 
 
-!ShoppingCartTests methodsFor: 'tests' stamp: 'FL 2/11/2021 21:54:01'!
-makeCart
-
-	^ ShoppingCart forStore: testStore forClientId: 1 withPassword: 'TEST'! !
-
-!ShoppingCartTests methodsFor: 'tests' stamp: 'FL 2/11/2021 21:30:16'!
+!ShoppingCartTests methodsFor: 'tests' stamp: 'FL 2/11/2021 18:20:53'!
 setUp
 	
 	"A sample store with some items used in the tests"
-	testStore := BookStore
-		withStockFor: (Dictionary with: 1933988274->999 with: 0321146530->999)
-		withPrices: (Dictionary with: 1933988274->250 with: 0321146530->750).! !
+	testStore := BookStore withStockFor: (Dictionary with: 1933988274->999 with: 0321146530->999).! !
 
-!ShoppingCartTests methodsFor: 'tests' stamp: 'FL 2/11/2021 21:54:01'!
+!ShoppingCartTests methodsFor: 'tests' stamp: 'FL 2/11/2021 17:47:32'!
 test01ANewShoppingCartShouldBeEmpty
 	
 	| currentCart |
-	currentCart := self makeCart.
+	currentCart := ShoppingCart forStore: testStore forClientId: 1 withPassword: 'TEST'.
 	
 	self assert: currentCart isEmpty! !
 
-!ShoppingCartTests methodsFor: 'tests' stamp: 'FL 2/11/2021 21:54:16'!
+!ShoppingCartTests methodsFor: 'tests' stamp: 'FL 2/11/2021 17:47:40'!
 test02AddingAnythingToAShoppingCartShouldNotLeaveItEmpty
 	
 	| currentCart |
-	currentCart := self makeCart.
+	currentCart := ShoppingCart forStore: testStore forClientId: 1 withPassword: 'TEST'.
 	
 	currentCart addBook: 1933988274 thisManyTimes: 1.
 	
 	self deny: currentCart isEmpty.! !
 
-!ShoppingCartTests methodsFor: 'tests' stamp: 'FL 2/11/2021 21:54:23'!
+!ShoppingCartTests methodsFor: 'tests' stamp: 'FL 2/11/2021 17:47:53'!
 test03ANewShoppingCartShouldNotHaveAnyContents
 	
 	| currentCart expectedContents |
-	currentCart := self makeCart.
+	currentCart := ShoppingCart forStore: testStore forClientId: 1 withPassword: 'TEST'.
 	expectedContents := Dictionary new.
 	
 	self assert: (currentCart contents = expectedContents).! !
 
-!ShoppingCartTests methodsFor: 'tests' stamp: 'FL 2/11/2021 21:54:27'!
+!ShoppingCartTests methodsFor: 'tests' stamp: 'FL 2/11/2021 17:48:05'!
 test04AShoppingCartShouldKeepTrackOfOneItem
 	
 	| currentCart expectedContents |
-	currentCart := self makeCart.
+	currentCart := ShoppingCart forStore: testStore forClientId: 1 withPassword: 'TEST'.
 	expectedContents := Dictionary with: 1933988274->1.
 	
 	currentCart addBook: 1933988274 thisManyTimes: 1.
 	
 	self assert: (currentCart contents = expectedContents).! !
 
-!ShoppingCartTests methodsFor: 'tests' stamp: 'FL 2/11/2021 21:54:33'!
+!ShoppingCartTests methodsFor: 'tests' stamp: 'FL 2/11/2021 17:48:11'!
 test05AShoppingCartShouldKeepTrackOfMoreThanOneItem
 	
 	| currentCart expectedContents |
-	currentCart := self makeCart.
+	currentCart := ShoppingCart forStore: testStore forClientId: 1 withPassword: 'TEST'.
 	expectedContents := Dictionary with: 1933988274->1 with: 0321146530->1.
 	
 	currentCart addBook: 1933988274 thisManyTimes: 1.
@@ -194,23 +148,23 @@ test05AShoppingCartShouldKeepTrackOfMoreThanOneItem
 	
 	self assert: (currentCart contents = expectedContents).! !
 
-!ShoppingCartTests methodsFor: 'tests' stamp: 'FL 2/11/2021 21:54:42'!
+!ShoppingCartTests methodsFor: 'tests' stamp: 'FL 2/11/2021 17:48:18'!
 test06AddingTheSameItemTwiceToAShoppingCartShouldAddMoreOfThatItem
 	
 	| currentCart expectedContents |
-	currentCart := self makeCart.
+	currentCart := ShoppingCart forStore: testStore forClientId: 1 withPassword: 'TEST'.
 	expectedContents := Dictionary with: 1933988274->5.
 	
-	currentCart addBook: 1933988274 thisManyTimes: 2.
-	currentCart addBook: 1933988274 thisManyTimes: 3.
+	currentCart addBook: 1933988274 thisManyTimes: 1.
+	currentCart addBook: 1933988274 thisManyTimes: 4.
 	
 	self assert: (currentCart contents = expectedContents).! !
 
-!ShoppingCartTests methodsFor: 'tests' stamp: 'FL 2/11/2021 21:54:48'!
+!ShoppingCartTests methodsFor: 'tests' stamp: 'FL 2/11/2021 17:48:25'!
 test07AShoppingCartShouldRaiseAnErrorOnInvalidQuantities
 	
 	| currentCart |
-	currentCart := self makeCart.
+	currentCart := ShoppingCart forStore: testStore forClientId: 1 withPassword: 'TEST'.
 	
 	self
 		should: [ currentCart addBook: 1933988274 thisManyTimes: -1. ]
@@ -219,11 +173,11 @@ test07AShoppingCartShouldRaiseAnErrorOnInvalidQuantities
 			self assert: ShoppingCart invalidQuantityErrorMessage equals: anError messageText.
 		].! !
 
-!ShoppingCartTests methodsFor: 'tests' stamp: 'FL 2/11/2021 21:54:54'!
+!ShoppingCartTests methodsFor: 'tests' stamp: 'FL 2/11/2021 17:48:30'!
 test08AShoppingCartShouldRaiseAnErrorOnInvalidBookISBNs
 	
 	| currentCart |
-	currentCart := self makeCart.
+	currentCart := ShoppingCart forStore: testStore forClientId: 1 withPassword: 'TEST'.
 	
 	self
 		should: [ currentCart addBook: 'invalid' thisManyTimes: 5. ]
@@ -232,11 +186,11 @@ test08AShoppingCartShouldRaiseAnErrorOnInvalidBookISBNs
 			self assert: ShoppingCart invalidBookISBNErrorMessage equals: anError messageText.
 		].! !
 
-!ShoppingCartTests methodsFor: 'tests' stamp: 'FL 2/11/2021 21:55:00'!
+!ShoppingCartTests methodsFor: 'tests' stamp: 'FL 2/11/2021 18:38:52'!
 test09AShoppingCartShouldRaiseAnErrorOnValidISBNsNotInStock
 	
 	| currentCart |
-	currentCart := self makeCart.
+	currentCart := ShoppingCart forStore: testStore forClientId: 1 withPassword: 'TEST'.
 	
 	self
 		should: [ currentCart addBook: 12345 thisManyTimes: 5. ]
@@ -245,77 +199,21 @@ test09AShoppingCartShouldRaiseAnErrorOnValidISBNsNotInStock
 			self assert: (BookStore noStockErrorMessageFor: 12345) equals: anError messageText.
 		].! !
 
-!ShoppingCartTests methodsFor: 'tests' stamp: 'FL 2/11/2021 21:55:05'!
+!ShoppingCartTests methodsFor: 'tests' stamp: 'FL 2/11/2021 18:40:22'!
 test10AddingBooksToTheCartShouldRemoveThemFromTheStore
 	
-	| currentCart expectedStock |
-	currentCart := self makeCart.
+	| currentCart separateTestStore |
+	separateTestStore := BookStore withStockFor: (Dictionary with: 12345->5).
+	currentCart := ShoppingCart forStore: separateTestStore forClientId: 1 withPassword: 'TEST'.
 	
-	expectedStock := (testStore stockOf: 1933988274) - 3.
-	currentCart addBook: 1933988274 thisManyTimes: 3.
-	
-	self assert: expectedStock equals: (testStore stockOf: 1933988274).
-	self assert: (Dictionary with: 1933988274->3) equals: currentCart contents.! !
-
-!ShoppingCartTests methodsFor: 'tests' stamp: 'FL 2/11/2021 21:55:11'!
-test11ResettingAShoppingCartShouldClearContentsAndReturnStock
-	
-	| currentCart expectedStock originalStock |
-	currentCart := self makeCart.
-	originalStock := testStore stockOf: 1933988274.
-	
-	expectedStock := originalStock - 1.
-	currentCart addBook: 1933988274 thisManyTimes: 1.
-	self assert: expectedStock equals: (testStore stockOf: 1933988274).
-	
-	currentCart reset.
-	self assert: originalStock equals: (testStore stockOf: 1933988274).
-	self assert: Dictionary new equals: currentCart contents.! !
-
-!ShoppingCartTests methodsFor: 'tests' stamp: 'FL 2/11/2021 21:55:19'!
-test12ANewShoppingCartsTotalPriceShouldBeZero
-	
-	| currentCart |
-	currentCart := self makeCart.
-	
-	self assert: 0 equals: currentCart totalPrice.! !
-
-!ShoppingCartTests methodsFor: 'tests' stamp: 'FL 2/11/2021 21:55:25'!
-test13AShoppingCartShouldKeepTrackOfThePriceOfOneItem
-	
-	| currentCart |
-	currentCart := self makeCart.
-	
-	currentCart addBook: 1933988274 thisManyTimes: 1.
-	
-	self assert: (testStore priceOf: 1933988274) equals: currentCart totalPrice.! !
-
-!ShoppingCartTests methodsFor: 'tests' stamp: 'FL 2/11/2021 21:55:31'!
-test14AShoppingCartShouldKeepTrackOfThePriceOfOneItemManyTimes
-	
-	| currentCart |
-	currentCart := self makeCart.
-	
-	currentCart addBook: 1933988274 thisManyTimes: 5.
-	
-	self assert: (testStore priceOf: 1933988274) * 5 equals: currentCart totalPrice.! !
-
-!ShoppingCartTests methodsFor: 'tests' stamp: 'FL 2/11/2021 21:55:36'!
-test15AShoppingCartShouldKeepTrackOfThePriceOfMoreThanOneItem
-	
-	| currentCart expectedPrice |
-	currentCart := self makeCart.
-	expectedPrice := (testStore priceOf: 1933988274) * 3 + (testStore priceOf: 0321146530).
-	
-	currentCart addBook: 1933988274 thisManyTimes: 3.
-	currentCart addBook: 0321146530 thisManyTimes: 1.
-	
-	self assert: expectedPrice equals: currentCart totalPrice.! !
+	currentCart addBook: 12345 thisManyTimes: 3.
+	self assert: 2 equals: (separateTestStore stockOf: 12345).
+	self assert: (Dictionary with: 12345->3) equals: currentCart contents.! !
 
 
 !classDefinition: #BookStore category: 'TusLibros'!
 Object subclass: #BookStore
-	instanceVariableNames: 'currentStock stockDictionary priceDictionary itemPrices'
+	instanceVariableNames: 'currentStock'
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'TusLibros'!
@@ -324,12 +222,6 @@ Object subclass: #BookStore
 initializeWithStock: aStockDictionary 
 
 	currentStock := aStockDictionary.! !
-
-!BookStore methodsFor: 'initialization' stamp: 'FL 2/11/2021 21:15:10'!
-initializeWithStock: aStockDictionary withPrices: aPriceDictionary 
-
-	currentStock := aStockDictionary.
-	itemPrices := aPriceDictionary.! !
 
 
 !BookStore methodsFor: 'stock' stamp: 'FL 2/11/2021 18:16:31'!
@@ -358,27 +250,16 @@ stockOf: aBookISBN
 	
 	^currentStock at: aBookISBN ifAbsent: 0.! !
 
-
-!BookStore methodsFor: 'price' stamp: 'FL 2/11/2021 21:24:09'!
-priceOf: aBookISBN 
-	
-	^itemPrices at: aBookISBN ifAbsent: [self error: (self class priceNotAvailableErrorFor: 54321)].! !
-
-!BookStore methodsFor: 'price' stamp: 'FL 2/11/2021 21:26:56'!
-updatePriceOf: aBookISBN to: aPrice
- 
-	itemPrices at: aBookISBN put: aPrice.! !
-
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
 !classDefinition: 'BookStore class' category: 'TusLibros'!
 BookStore class
 	instanceVariableNames: ''!
 
-!BookStore class methodsFor: 'instance creation' stamp: 'FL 2/11/2021 21:14:36'!
-withStockFor: aStockDictionary withPrices: aPriceDictionary 
+!BookStore class methodsFor: 'instance creation' stamp: 'FL 2/11/2021 17:41:18'!
+withStockFor: aStockDictionary 
 
-	^self new initializeWithStock: aStockDictionary withPrices: aPriceDictionary.! !
+	^self new initializeWithStock: aStockDictionary ! !
 
 
 !BookStore class methodsFor: 'error messages' stamp: 'FL 2/11/2021 18:13:12'!
@@ -390,12 +271,6 @@ insufficientStockErrorMessageFor: aBookISBN atQuantity: aQuantity
 noStockErrorMessageFor: aBookISBN
  
 	^'The book ', aBookISBN asString, ' is not in stock.'! !
-
-
-!BookStore class methodsFor: 'as yet unclassified' stamp: 'FL 2/11/2021 21:21:11'!
-priceNotAvailableErrorFor: aBookISBN 
-	
-	^'Price for book ', aBookISBN asString, ' not found.'! !
 
 
 !classDefinition: #ShoppingCart category: 'TusLibros'!
@@ -437,25 +312,6 @@ contents
 isEmpty
 	
 	^books isEmpty! !
-
-
-!ShoppingCart methodsFor: 'as yet unclassified' stamp: 'FL 2/11/2021 21:05:45'!
-reset
-	
-	books keysDo: [:aBookISBN | 
-		associatedStore addStockOf: aBookISBN by: (books at: aBookISBN).
-		books removeKey: aBookISBN.
-	]! !
-
-!ShoppingCart methodsFor: 'as yet unclassified' stamp: 'FL 2/11/2021 21:47:51'!
-totalPrice
-	
-	| total |
-	total := 0.
-	books keysAndValuesDo: [:aBookISBN :aQuantity |
-		total := total + ((associatedStore priceOf: aBookISBN) * aQuantity).
-	].
-	^total.! !
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 

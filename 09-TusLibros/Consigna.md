@@ -113,6 +113,3 @@ Ya podemos agregar cosas al carrito, ahora viene la segunda parte de toda compra
 
 Como siempre, se pide resolver el ejercicio mediante TDD, aplicando todo lo visto hasta el momento en la materia.
 
-
-
-
