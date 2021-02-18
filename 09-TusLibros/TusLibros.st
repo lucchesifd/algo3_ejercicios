@@ -47,7 +47,7 @@ test05ReducingTheStockOfAnAvailableItemShouldWork
 	
 	self assert: 2 equals: (currentStore stockOf: 12345).! !
 
-!BookStoreTests methodsFor: 'tests' stamp: 'FL 2/11/2021 21:29:02'!
+!BookStoreTests methodsFor: 'tests' stamp: 'FL 2/18/2021 18:24:12'!
 test06ReducingTheStockOfAnUnavailableItemShouldRaiseAnError
 
 	| currentStore |
@@ -56,10 +56,10 @@ test06ReducingTheStockOfAnUnavailableItemShouldRaiseAnError
 	self should: [ currentStore reduceStockOf: 54321 by: 5. ]
 		raise: Error - MessageNotUnderstood
 		withExceptionDo: [:anError |
-			self assert: (BookStore noStockErrorMessageFor: 54321) equals: anError messageText.
+			self assert: BookStore noStockErrorMessage equals: anError messageText.
 		].! !
 
-!BookStoreTests methodsFor: 'tests' stamp: 'FL 2/11/2021 21:29:07'!
+!BookStoreTests methodsFor: 'tests' stamp: 'FL 2/18/2021 18:24:20'!
 test07ReducingTheStockTooFarShouldAlsoRaiseAnError
 
 	| currentStore |
@@ -68,7 +68,7 @@ test07ReducingTheStockTooFarShouldAlsoRaiseAnError
 	self should: [ currentStore reduceStockOf: 12345 by: 7. ]
 		raise: Error - MessageNotUnderstood
 		withExceptionDo: [:anError |
-			self assert: (BookStore insufficientStockErrorMessageFor: 12345 atQuantity: 7) equals: anError messageText.
+			self assert: BookStore insufficientStockErrorMessage equals: anError messageText.
 		].! !
 
 !BookStoreTests methodsFor: 'tests' stamp: 'FL 2/11/2021 21:29:11'!
@@ -89,7 +89,7 @@ test09RetrievingThePriceOfAnExistingItemWorks
 	
 	self assert: 250 equals: (currentStore priceOf: 12345).! !
 
-!BookStoreTests methodsFor: 'tests' stamp: 'FL 2/11/2021 21:29:20'!
+!BookStoreTests methodsFor: 'tests' stamp: 'FL 2/18/2021 18:24:27'!
 test10RetrievingThePriceOfAnUnexistingItemShouldRaiseAnError
 
 	| currentStore |
@@ -99,7 +99,7 @@ test10RetrievingThePriceOfAnUnexistingItemShouldRaiseAnError
 		should: [ currentStore priceOf: 54321 ]
 		raise: Error - MessageNotUnderstood
 		withExceptionDo: [:anError |
-			self assert: (BookStore priceNotAvailableErrorFor: 54321) equals: anError messageText.
+			self assert: BookStore priceNotAvailableError equals: anError messageText.
 		].! !
 
 !BookStoreTests methodsFor: 'tests' stamp: 'FL 2/11/2021 21:28:01'!
@@ -128,23 +128,18 @@ TestCase subclass: #MerchantAndCheckoutTests
 	poolDictionaries: ''
 	category: 'TusLibros'!
 !MerchantAndCheckoutTests commentStamp: '<historical>' prior: 0!
-TO-DO: Implement test cases for formatting errors!
+TO-DO:
+	- Añadir tests de verificacion de formateo de los numeros!
 
 
-!MerchantAndCheckoutTests methodsFor: 'as yet unclassified' stamp: 'FL 2/16/2021 17:32:57'!
-makeStore
-
-	^ BookStore forMerchant: MerchantFake withStockFor: (Dictionary with: bookId->100) withPrices: (Dictionary with: bookId->bookPrice).
-	! !
-
-!MerchantAndCheckoutTests methodsFor: 'as yet unclassified' stamp: 'FL 2/16/2021 17:05:39'!
+!MerchantAndCheckoutTests methodsFor: 'tests' stamp: 'FL 2/16/2021 17:05:39'!
 setUp
 
 	bookPrice := 100.
 	bookId := 365563.
 	! !
 
-!MerchantAndCheckoutTests methodsFor: 'as yet unclassified' stamp: 'FL 2/16/2021 17:54:47'!
+!MerchantAndCheckoutTests methodsFor: 'tests' stamp: 'FL 2/18/2021 17:37:39'!
 test01ABasicCheckoutShouldWork
 
 	| currentCart currentStore expectedTransaction |
@@ -154,42 +149,117 @@ test01ABasicCheckoutShouldWork
 	
 	currentCart addBook: bookId thisManyTimes: 5.
 	
-	currentCart checkoutWithCardNumber: '1234123412341234' withExpirationDate: '1225' withCardOwner: 'TEST CARD'.
+	currentCart checkoutWithCardNumber: '1234123412341234' withExpirationDate: '122100' withCardOwner: 'TEST CARD'.
 	
 	self assert: expectedTransaction equals: currentStore transactionsMade.
 	self assert: Dictionary new equals: currentCart contents.
 	! !
 
-!MerchantAndCheckoutTests methodsFor: 'as yet unclassified' stamp: 'FL 2/16/2021 17:41:41'!
-test02
+!MerchantAndCheckoutTests methodsFor: 'tests' stamp: 'FL 2/18/2021 18:04:19'!
+test02CheckingOutAnEmptyCartShouldRaiseAnError
 
 	| currentCart currentStore |
 	currentStore := self makeStore.
 	currentCart := ShoppingCart forStore: currentStore forClientId: 1 withPassword: 'TEST'.
 	
 	self
-		should: [currentCart checkoutWithCardNumber: '1234123412341234' withExpirationDate: '1225' withCardOwner: 'TEST CARD'.]
+		should: [currentCart checkoutWithCardNumber: '1234123412341234' withExpirationDate: '122100' withCardOwner: 'TEST CARD'.]
 		raise: Error - MessageNotUnderstood
 		withExceptionDo: [:anError | 
 			self assert: ShoppingCart emptyCartCheckoutErrorMessage equals: anError messageText.
 		].
 	! !
 
-!MerchantAndCheckoutTests methodsFor: 'as yet unclassified' stamp: 'FL 2/16/2021 17:47:10'!
-test03
+!MerchantAndCheckoutTests methodsFor: 'tests' stamp: 'FL 2/18/2021 18:33:58'!
+test03ATestTransactionTo0000000000000000ShouldFail
+	
+	self assertCharging: '100.00' toCardNumber: '0000000000000000' withExpirationDate: '122100' withCardOwner: 'TEST CARD'
+		raisesTheErrorMessage: MerchantFake transactionFailedErrorMessage.! !
 
-	| currentCart currentStore |
-	currentStore := self makeStore.
-	currentCart := ShoppingCart forStore: currentStore forClientId: 1 withPassword: 'TEST'.
+!MerchantAndCheckoutTests methodsFor: 'tests' stamp: 'FL 2/18/2021 18:33:58'!
+test04CreditCardNumbersThatArentSixteenDigitsAreInvalid
+
+	self assertCharging: '100.00' toCardNumber: '123456789' withExpirationDate: '122100' withCardOwner: 'TEST CARD'
+		raisesTheErrorMessage: MerchantFake invalidCardNumberErrorMessage.
+	! !
+
+!MerchantAndCheckoutTests methodsFor: 'tests' stamp: 'FL 2/18/2021 18:33:57'!
+test05CreditCardNumbersThatHaveNonNumericDigitsAreInvalid
+
+	self assertCharging: '100.00' toCardNumber: '1234abcd1234abcd' withExpirationDate: '122100' withCardOwner: 'TEST CARD'
+		raisesTheErrorMessage: MerchantFake invalidCardNumberErrorMessage.
+	! !
+
+!MerchantAndCheckoutTests methodsFor: 'tests' stamp: 'FL 2/18/2021 18:33:58'!
+test06ExpirationDatesThatArentSixDigitsAreInvalid
+
+	self assertCharging: '100.00' toCardNumber: '1234123412341234' withExpirationDate: '1234' withCardOwner: 'TEST CARD'
+		raisesTheErrorMessage: MerchantFake invalidExpirationDateErrorMessage.
+	! !
+
+!MerchantAndCheckoutTests methodsFor: 'tests' stamp: 'FL 2/18/2021 18:33:58'!
+test07ExpirationDatesThatHaveNonNumericDigitsAreInvalid
+
+	self assertCharging: '100.00' toCardNumber: '1234123412341234' withExpirationDate: '12abcd' withCardOwner: 'TEST CARD'
+		raisesTheErrorMessage: MerchantFake invalidExpirationDateErrorMessage.! !
+
+!MerchantAndCheckoutTests methodsFor: 'tests' stamp: 'FL 2/18/2021 18:33:57'!
+test08ExpirationMonthsThatAreAboveTwelveAreInvalid
+
+	self assertCharging: '100.00' toCardNumber: '1234123412341234' withExpirationDate: '232100' withCardOwner: 'TEST CARD'
+		raisesTheErrorMessage: MerchantFake invalidExpirationDateMonthErrorMessage.! !
+
+!MerchantAndCheckoutTests methodsFor: 'tests' stamp: 'FL 2/18/2021 18:33:57'!
+test09ExpirationMonthZeroIsAlsoInvalid
+
+	self assertCharging: '100.00' toCardNumber: '1234123412341234' withExpirationDate: '002100' withCardOwner: 'TEST CARD'
+		raisesTheErrorMessage: MerchantFake invalidExpirationDateMonthErrorMessage.! !
+
+!MerchantAndCheckoutTests methodsFor: 'tests' stamp: 'FL 2/18/2021 18:33:57'!
+test10ExpirationYearsBelow1900AreInvalid
+
+	self assertCharging: '100.00' toCardNumber: '1234123412341234' withExpirationDate: '111899' withCardOwner: 'TEST CARD'
+		raisesTheErrorMessage: MerchantFake invalidExpirationDateYearErrorMessage.
+	! !
+
+!MerchantAndCheckoutTests methodsFor: 'tests' stamp: 'FL 2/18/2021 18:33:57'!
+test11AnAlreadyExpiredCreditCardIsInvalid
+
+	self assertCharging: '100.00' toCardNumber: '1234123412341234' withExpirationDate: '052010' withCardOwner: 'TEST CARD'
+		raisesTheErrorMessage: MerchantFake cardAlreadyExpiredErrorMessage.
+	! !
+
+!MerchantAndCheckoutTests methodsFor: 'tests' stamp: 'FL 2/18/2021 18:33:57'!
+test12CardOwnerNamesThatAreEmptyAreInvalid
+
+	self assertCharging: '100.00' toCardNumber: '1234123412341234' withExpirationDate: '122100' withCardOwner: ''
+		raisesTheErrorMessage: MerchantFake invalidCardOwnerErrorMessage.
+	! !
+
+!MerchantAndCheckoutTests methodsFor: 'tests' stamp: 'FL 2/18/2021 18:33:58'!
+test13CardOwnerNamesThatAreLongerThanThirtyCharactersAreAlsoInvalid
 	
-	currentCart addBook: bookId thisManyTimes: 5.
+	| invalidLongName |
+	invalidLongName := '1234567890123456789012345678901234567890'.
 	
+	self assertCharging: '100.00' toCardNumber: '1234123412341234' withExpirationDate: '122100' withCardOwner: invalidLongName
+		raisesTheErrorMessage: MerchantFake invalidCardOwnerErrorMessage.
+	! !
+
+
+!MerchantAndCheckoutTests methodsFor: 'tests - private' stamp: 'FL 2/18/2021 18:33:57'!
+assertCharging: anAmount toCardNumber: aCardNumber withExpirationDate: anExpirationDate withCardOwner: aCardOwner raisesTheErrorMessage: anErrorMessage
+
 	self
-		should: [currentCart checkoutWithCardNumber: '0000000000000000' withExpirationDate: '1225' withCardOwner: 'TEST CARD'.]
+		should: [MerchantFake chargeAmount: anAmount toCardNumber: aCardNumber withExpirationDate: anExpirationDate withCardOwner: aCardOwner.]
 		raise: Error - MessageNotUnderstood
-		withExceptionDo: [:anError | 
-			self assert: MerchantFake transactionFailedErrorMessage equals: anError messageText.
-		].
+		withExceptionDo: [:anError | self assert: anErrorMessage equals: anError messageText.].
+	! !
+
+!MerchantAndCheckoutTests methodsFor: 'tests - private' stamp: 'FL 2/16/2021 17:32:57'!
+makeStore
+
+	^ BookStore forMerchant: MerchantFake withStockFor: (Dictionary with: bookId->100) withPrices: (Dictionary with: bookId->bookPrice).
 	! !
 
 
@@ -199,9 +269,6 @@ TestCase subclass: #ShoppingCartTests
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'TusLibros'!
-!ShoppingCartTests commentStamp: '<historical>' prior: 0!
-Hacer tests de contenidos del carrito y tests de si un libro existe...?!
-
 
 !ShoppingCartTests methodsFor: 'tests' stamp: 'FL 2/16/2021 17:32:24'!
 setUp
@@ -286,7 +353,7 @@ test07AShoppingCartShouldRaiseAnErrorOnInvalidQuantities
 			self assert: ShoppingCart invalidQuantityErrorMessage equals: anError messageText.
 		].! !
 
-!ShoppingCartTests methodsFor: 'tests' stamp: 'FL 2/16/2021 16:36:41'!
+!ShoppingCartTests methodsFor: 'tests' stamp: 'FL 2/18/2021 18:24:34'!
 test08AShoppingCartShouldRaiseAnErrorOnValidISBNsNotInStock
 	
 	| currentCart |
@@ -296,7 +363,7 @@ test08AShoppingCartShouldRaiseAnErrorOnValidISBNsNotInStock
 		should: [ currentCart addBook: 12345 thisManyTimes: 5. ]
 		raise: Error - MessageNotUnderstood
 		withExceptionDo: [:anError |
-			self assert: (BookStore noStockErrorMessageFor: 12345) equals: anError messageText.
+			self assert: BookStore noStockErrorMessage equals: anError messageText.
 		].! !
 
 !ShoppingCartTests methodsFor: 'tests' stamp: 'FL 2/16/2021 16:36:47'!
@@ -381,7 +448,7 @@ test15AShoppingCartShouldKeepTrackOfThePriceOfOneItemManyTimes
 	self assert: (testStore priceOf: 1933988274) * 5 equals: currentCart totalPrice.! !
 
 
-!ShoppingCartTests methodsFor: 'testing - private' stamp: 'FL 2/11/2021 21:54:01'!
+!ShoppingCartTests methodsFor: 'tests - private' stamp: 'FL 2/11/2021 21:54:01'!
 makeCart
 
 	^ ShoppingCart forStore: testStore forClientId: 1 withPassword: 'TEST'! !
@@ -393,6 +460,10 @@ Object subclass: #BookStore
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'TusLibros'!
+!BookStore commentStamp: '<historical>' prior: 0!
+TO-DO:
+	- Formatear numero para el merchant correctamente, en vez de simplemente convertirlo a String.!
+
 
 !BookStore methodsFor: 'initialization' stamp: 'FL 2/16/2021 17:34:46'!
 initializeForMerchant: aMerchant withStockFor: aStockDictionary withPrices: aPriceDictionary 
@@ -413,14 +484,14 @@ hasStockOf: aBookISBN
 	
 	^(self stockOf: aBookISBN) strictlyPositive.! !
 
-!BookStore methodsFor: 'stock' stamp: 'FL 2/11/2021 18:38:15'!
+!BookStore methodsFor: 'stock' stamp: 'FL 2/18/2021 18:25:08'!
 reduceStockOf: aBookISBN by: aQuantity 
 	
 	| newStock |
-	(self hasStockOf: aBookISBN) ifFalse: [self error: (self class noStockErrorMessageFor: aBookISBN)].
+	(self hasStockOf: aBookISBN) ifFalse: [self error: self class noStockErrorMessage].
 	
 	newStock := (self stockOf: aBookISBN) - aQuantity.
-	newStock positive ifFalse: [self error: (self class insufficientStockErrorMessageFor: aBookISBN atQuantity: aQuantity)].
+	newStock positive ifFalse: [self error: self class insufficientStockErrorMessage].
 	
 	currentStock at: aBookISBN put: newStock.! !
 
@@ -430,19 +501,19 @@ stockOf: aBookISBN
 	^currentStock at: aBookISBN ifAbsent: 0.! !
 
 
-!BookStore methodsFor: 'money related' stamp: 'FL 2/16/2021 17:18:52'!
+!BookStore methodsFor: 'money related' stamp: 'FL 2/18/2021 18:42:37'!
 checkoutCart: aShoppingCartOfThisStore withCardNumber: aCardNumber withExpirationDate: anExpirationDate withCardOwner: aCardOwner 
 	
 	| transactionAmount |
 	transactionAmount := aShoppingCartOfThisStore totalPrice.
-	associatedMerchant chargeAmount: transactionAmount toCardNumber: aCardNumber withExpirationDate: anExpirationDate withCardOwner: aCardOwner.
+	associatedMerchant chargeAmount: transactionAmount asString toCardNumber: aCardNumber withExpirationDate: anExpirationDate withCardOwner: aCardOwner.
 	
 	transactionsMade add: transactionAmount.! !
 
-!BookStore methodsFor: 'money related' stamp: 'FL 2/16/2021 17:35:27'!
+!BookStore methodsFor: 'money related' stamp: 'FL 2/18/2021 18:25:26'!
 priceOf: aBookISBN 
 	
-	^itemPrices at: aBookISBN ifAbsent: [self error: (self class priceNotAvailableErrorFor: aBookISBN)].! !
+	^itemPrices at: aBookISBN ifAbsent: [self error: self class priceNotAvailableError].! !
 
 !BookStore methodsFor: 'money related' stamp: 'FL 2/16/2021 17:28:55'!
 transactionsMade
@@ -466,21 +537,20 @@ forMerchant: aMerchant withStockFor: aStockDictionary withPrices: aPriceDictiona
 	^self new initializeForMerchant: aMerchant withStockFor: aStockDictionary withPrices: aPriceDictionary.! !
 
 
-!BookStore class methodsFor: 'error messages' stamp: 'FL 2/11/2021 18:13:12'!
-insufficientStockErrorMessageFor: aBookISBN atQuantity: aQuantity 
+!BookStore class methodsFor: 'error messages' stamp: 'FL 2/18/2021 18:22:56'!
+insufficientStockErrorMessage
 	
-	^'There is not enough stock to retrieve the book ', aBookISBN asString, ' ', aQuantity asString, ' time(s).' ! !
+	^'There is not enough stock to retrieve the book asked.'! !
 
-!BookStore class methodsFor: 'error messages' stamp: 'FL 2/11/2021 18:35:37'!
-noStockErrorMessageFor: aBookISBN
+!BookStore class methodsFor: 'error messages' stamp: 'FL 2/18/2021 18:23:06'!
+noStockErrorMessage
  
-	^'The book ', aBookISBN asString, ' is not in stock.'! !
+	^'The book asked for is not in stock.'! !
 
-
-!BookStore class methodsFor: 'as yet unclassified' stamp: 'FL 2/11/2021 21:21:11'!
-priceNotAvailableErrorFor: aBookISBN 
+!BookStore class methodsFor: 'error messages' stamp: 'FL 2/18/2021 18:23:24'!
+priceNotAvailableError
 	
-	^'Price for book ', aBookISBN asString, ' not found.'! !
+	^'Price for book asked not found.'! !
 
 
 !classDefinition: #MerchantFake category: 'TusLibros'!
@@ -492,7 +562,13 @@ Object subclass: #MerchantFake
 !MerchantFake commentStamp: '<historical>' prior: 0!
 The base of a merchant, as the name implies it does not realize any real credit card transactions.
 
-As a special testing case, all transactions with valid details succeed except the ones to credit card number "0000000000000000".!
+As a special testing case, all transactions with valid details succeed except the ones to credit card number "0000000000000000".
+
+---
+
+La base de un Merchant, como el nombre implica no realiza ninguna transaccion con tarjetas de credito reales.
+
+Como un caso especial de prueba, todas las transacciones con detalles validos son aceptadas excepto las realizadas al numero de tarjeta de credito "0000000000000000".!
 
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
@@ -501,15 +577,86 @@ As a special testing case, all transactions with valid details succeed except th
 MerchantFake class
 	instanceVariableNames: ''!
 
-!MerchantFake class methodsFor: 'as yet unclassified' stamp: 'FL 2/16/2021 17:53:19'!
+!MerchantFake class methodsFor: 'transactions' stamp: 'FL 2/18/2021 18:21:34'!
 chargeAmount: aPrice toCardNumber: aCardNumber withExpirationDate: anExpirationDate withCardOwner: aCardOwner 
 	
+	self validateCardNumber: aCardNumber.
+	self validateExpirationDate: anExpirationDate.
+	self validateCardOwner: aCardOwner.
+	
+	"Special testing case."
 	(aCardNumber = '0000000000000000') ifTrue: [self error: self transactionFailedErrorMessage]! !
 
-!MerchantFake class methodsFor: 'as yet unclassified' stamp: 'FL 2/16/2021 17:54:01'!
+
+!MerchantFake class methodsFor: 'error messages' stamp: 'FL 2/18/2021 17:23:39'!
+cardAlreadyExpiredErrorMessage
+
+	^'The Credit Card given has already expired.'! !
+
+!MerchantFake class methodsFor: 'error messages' stamp: 'FL 2/18/2021 16:52:02'!
+invalidCardNumberErrorMessage
+
+	^'Invalid Credit Card number.'! !
+
+!MerchantFake class methodsFor: 'error messages' stamp: 'FL 2/18/2021 17:40:29'!
+invalidCardOwnerErrorMessage
+
+	^'Invalid Credit Card owner name.'! !
+
+!MerchantFake class methodsFor: 'error messages' stamp: 'FL 2/18/2021 16:58:05'!
+invalidExpirationDateErrorMessage
+	
+	^'Invalid Credit Card expiration date.'! !
+
+!MerchantFake class methodsFor: 'error messages' stamp: 'FL 2/18/2021 18:20:33'!
+invalidExpirationDateMonthErrorMessage
+	
+	^'Expiration month out of range.'! !
+
+!MerchantFake class methodsFor: 'error messages' stamp: 'FL 2/18/2021 17:26:07'!
+invalidExpirationDateYearErrorMessage
+
+	^'Expiration year given should be after 1900.'! !
+
+!MerchantFake class methodsFor: 'error messages' stamp: 'FL 2/16/2021 17:54:01'!
 transactionFailedErrorMessage
 	
 	^'Transaction failed.'! !
+
+
+!MerchantFake class methodsFor: 'detail validation' stamp: 'FL 2/18/2021 18:21:01'!
+assertNumeric: aString
+
+	^aString allSatisfy: [:aPotentialDigit | aPotentialDigit isDigit]! !
+
+!MerchantFake class methodsFor: 'detail validation' stamp: 'FL 2/18/2021 18:13:02'!
+validateCardNumber: aCardNumber
+
+	(aCardNumber size = 16) ifFalse: [self error: self invalidCardNumberErrorMessage].
+	(self assertNumeric: aCardNumber) ifFalse: [self error: self invalidCardNumberErrorMessage]! !
+
+!MerchantFake class methodsFor: 'detail validation' stamp: 'FL 2/18/2021 18:21:30'!
+validateCardOwner: aCardOwner
+
+	^ (aCardOwner size between: 1 and: 30) ifFalse: [self error: self invalidCardOwnerErrorMessage]! !
+
+!MerchantFake class methodsFor: 'detail validation' stamp: 'FL 2/18/2021 18:13:50'!
+validateExpirationDate: anExpirationDate
+	
+	| expirationMonth expirationYear currentDate expirationDate |
+	(anExpirationDate size = 6) ifFalse: [self error: self invalidExpirationDateErrorMessage].
+	(self assertNumeric: anExpirationDate) ifFalse: [self error: self invalidExpirationDateErrorMessage].
+	
+	expirationMonth := (anExpirationDate copyFrom: 1 to: 2) asNumber.
+	expirationYear := (anExpirationDate copyFrom: 3 to: 6) asNumber.
+	(expirationMonth between: 1 and: 12) ifFalse: [self error: self invalidExpirationDateMonthErrorMessage.].
+	(expirationYear >= 1900) ifFalse: [self error: self invalidExpirationDateYearErrorMessage.].
+	
+	currentDate := Date today.
+	expirationDate := Date newDay: 1 month: expirationMonth year: expirationYear.
+	(currentDate < expirationDate) ifFalse: [self error: self cardAlreadyExpiredErrorMessage].
+	
+	! !
 
 
 !classDefinition: #ShoppingCart category: 'TusLibros'!
@@ -518,9 +665,6 @@ Object subclass: #ShoppingCart
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'TusLibros'!
-!ShoppingCart commentStamp: '<historical>' prior: 0!
-Nota: modelo los ISBN como numeros, por ahora.!
-
 
 !ShoppingCart methodsFor: 'initialization' stamp: 'FL 2/11/2021 17:45:19'!
 initializeForStore: aStore
@@ -576,7 +720,7 @@ totalPrice
 	^total.! !
 
 
-!ShoppingCart methodsFor: 'as yet unclassified' stamp: 'FL 2/16/2021 17:55:23'!
+!ShoppingCart methodsFor: 'checkout' stamp: 'FL 2/16/2021 17:55:23'!
 checkoutWithCardNumber: aCardNumber withExpirationDate: anExpirationDate withCardOwner: aCardOwner 
 	
 	books ifEmpty: [self error: self class emptyCartCheckoutErrorMessage.].
