@@ -389,8 +389,36 @@ test08AShoppingCartShouldRaiseAnErrorOnInvalidQuantities
 			self assert: currentCart allBooks isEmpty.
 		].! !
 
-!ShoppingCartTests methodsFor: 'tests' stamp: 'FL 2/18/2021 23:24:35'!
-test09AShoppingCartShouldRaiseAnErrorOnValidISBNsNotInStock
+!ShoppingCartTests methodsFor: 'tests' stamp: 'FL 2/22/2021 20:57:58'!
+test09AShoppingCartShouldRaiseAnErrorOnAddingABookZeroTimes
+	
+	| currentCart |
+	currentCart := self makeCart.
+	
+	self
+		should: [ currentCart addBook: includedBook1 thisManyTimes: 0. ]
+		raise: Error - MessageNotUnderstood
+		withExceptionDo: [:anError |
+			self assert: ShoppingCart invalidQuantityErrorMessage equals: anError messageText.
+			self assert: currentCart allBooks isEmpty.
+		].! !
+
+!ShoppingCartTests methodsFor: 'tests' stamp: 'FL 2/22/2021 21:01:20'!
+test10AShoppingCartShouldRaiseAnErrorOnNonIntegerQuantities
+	
+	| currentCart |
+	currentCart := self makeCart.
+	
+	self
+		should: [ currentCart addBook: includedBook1 thisManyTimes: 3.7. ]
+		raise: Error - MessageNotUnderstood
+		withExceptionDo: [:anError |
+			self assert: ShoppingCart invalidQuantityErrorMessage equals: anError messageText.
+			self assert: currentCart allBooks isEmpty.
+		].! !
+
+!ShoppingCartTests methodsFor: 'tests' stamp: 'FL 2/22/2021 20:58:10'!
+test11AShoppingCartShouldRaiseAnErrorOnValidISBNsNotInStock
 	
 	| currentCart |
 	currentCart := self makeCart.
@@ -402,8 +430,8 @@ test09AShoppingCartShouldRaiseAnErrorOnValidISBNsNotInStock
 			self assert: BookStore noStockErrorMessage equals: anError messageText.
 		].! !
 
-!ShoppingCartTests methodsFor: 'tests' stamp: 'FL 2/18/2021 23:25:02'!
-test10AddingBooksToTheCartShouldRemoveThemFromTheStore
+!ShoppingCartTests methodsFor: 'tests' stamp: 'FL 2/22/2021 20:58:18'!
+test12AddingBooksToTheCartShouldRemoveThemFromTheStore
 	
 	| currentCart expectedStock |
 	currentCart := self makeCart.
@@ -415,8 +443,8 @@ test10AddingBooksToTheCartShouldRemoveThemFromTheStore
 	self assert: (Array with: includedBook1) equals: currentCart allBooks.
 	self assert: 3 equals: (currentCart amountOf: includedBook1).! !
 
-!ShoppingCartTests methodsFor: 'tests' stamp: 'FL 2/18/2021 23:25:18'!
-test11TellingAShoppingCartToReturnItemsShouldReturnAllItemsToTheStore
+!ShoppingCartTests methodsFor: 'tests' stamp: 'FL 2/22/2021 20:58:30'!
+test13TellingAShoppingCartToReturnItemsShouldReturnAllItemsToTheStore
 	
 	| currentCart expectedStock originalStock |
 	currentCart := self makeCart.
@@ -430,8 +458,8 @@ test11TellingAShoppingCartToReturnItemsShouldReturnAllItemsToTheStore
 	self assert: originalStock equals: (testStore stockOf: includedBook1).
 	self assert: currentCart allBooks isEmpty.! !
 
-!ShoppingCartTests methodsFor: 'tests' stamp: 'FL 2/18/2021 23:25:33'!
-test12TellingAShoppingCartToClearItemsShouldRemoveAllItemsWithoutReturningThem
+!ShoppingCartTests methodsFor: 'tests' stamp: 'FL 2/22/2021 20:58:39'!
+test14TellingAShoppingCartToClearItemsShouldRemoveAllItemsWithoutReturningThem
 	
 	| currentCart expectedStock |
 	currentCart := self makeCart.
@@ -444,16 +472,16 @@ test12TellingAShoppingCartToClearItemsShouldRemoveAllItemsWithoutReturningThem
 	self assert: expectedStock equals: (testStore stockOf: includedBook1).
 	self assert: currentCart allBooks isEmpty.! !
 
-!ShoppingCartTests methodsFor: 'tests' stamp: 'FL 2/18/2021 22:10:34'!
-test13ANewShoppingCartsTotalPriceShouldBeZero
+!ShoppingCartTests methodsFor: 'tests' stamp: 'FL 2/22/2021 20:59:05'!
+test15ANewShoppingCartsTotalPriceShouldBeZero
 	
 	| currentCart |
 	currentCart := self makeCart.
 	
 	self assert: 0 equals: currentCart totalPrice.! !
 
-!ShoppingCartTests methodsFor: 'tests' stamp: 'FL 2/18/2021 23:25:50'!
-test14AShoppingCartShouldKeepTrackOfThePriceOfOneItem
+!ShoppingCartTests methodsFor: 'tests' stamp: 'FL 2/22/2021 21:00:23'!
+test16AShoppingCartShouldKeepTrackOfThePriceOfOneItem
 	
 	| currentCart |
 	currentCart := self makeCart.
@@ -462,8 +490,8 @@ test14AShoppingCartShouldKeepTrackOfThePriceOfOneItem
 	
 	self assert: includedBook1Price equals: currentCart totalPrice.! !
 
-!ShoppingCartTests methodsFor: 'tests' stamp: 'FL 2/18/2021 23:26:19'!
-test15AShoppingCartShouldKeepTrackOfThePriceOfMoreThanOneItem
+!ShoppingCartTests methodsFor: 'tests' stamp: 'FL 2/22/2021 21:00:35'!
+test17AShoppingCartShouldKeepTrackOfThePriceOfMoreThanOneItem
 	
 	| currentCart expectedPrice |
 	currentCart := self makeCart.
@@ -474,8 +502,8 @@ test15AShoppingCartShouldKeepTrackOfThePriceOfMoreThanOneItem
 	
 	self assert: expectedPrice equals: currentCart totalPrice.! !
 
-!ShoppingCartTests methodsFor: 'tests' stamp: 'FL 2/18/2021 23:26:41'!
-test16AShoppingCartShouldKeepTrackOfThePriceOfOneItemManyTimes
+!ShoppingCartTests methodsFor: 'tests' stamp: 'FL 2/22/2021 21:00:44'!
+test18AShoppingCartShouldKeepTrackOfThePriceOfOneItemManyTimes
 	
 	| currentCart |
 	currentCart := self makeCart.
@@ -496,6 +524,235 @@ assert: aBaseArray contains: aTestArray
 makeCart
 
 	^ ShoppingCart forStore: testStore.! !
+
+
+!classDefinition: #StoreManagerTests category: 'TusLibros'!
+TestCase subclass: #StoreManagerTests
+	instanceVariableNames: 'includedBook notIncludedBook includedBookPrice includedBookStock includedBook1 includedBook1Price includedBook2 includedBook2Price testStore validUserID validPassword invalidUserID invalidPassword'
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'TusLibros'!
+!StoreManagerTests commentStamp: '<historical>' prior: 0!
+TO-DO:
+	- /checkOutCart e /listPurchases
+	- Hacer tests si un carrito es valido, si al avanzar tiempo sigue siendo valido, etc etc.
+!
+
+
+!StoreManagerTests methodsFor: 'as yet unclassified' stamp: 'FL 2/22/2021 21:27:52'!
+makeManager
+	
+	| currentAuthenticator |
+	currentAuthenticator := Authenticator forUsers: (Dictionary with: validUserID->validPassword).
+	^StoreManager forStore: testStore withAuthenticator: currentAuthenticator usingTime: Time.! !
+
+!StoreManagerTests methodsFor: 'as yet unclassified' stamp: 'FL 2/22/2021 19:05:26'!
+setUp
+
+	includedBook1 := 1933988274. includedBook1Price := 250.
+	includedBook2 := 0321146530. includedBook2Price := 750.
+	
+	"A sample store with some items used in the tests"
+	testStore := BookStore forMerchant: MerchantFake
+		withStockFor: (Dictionary with: includedBook1->99999 with: includedBook2->99999)
+		withPrices: (Dictionary with: includedBook1->includedBook1Price with: includedBook2->includedBook2Price).
+	
+	validUserID := 12345. validPassword := 'ABCDE'.
+	invalidUserID := 54321. invalidPassword := 'EDCBA'.! !
+
+!StoreManagerTests methodsFor: 'as yet unclassified' stamp: 'FL 2/22/2021 19:04:06'!
+test01
+	
+	| currentAuthenticator |
+	currentAuthenticator := Authenticator forUsers: (Dictionary with: validUserID->validPassword).
+	
+	self assert: (currentAuthenticator validateId: validUserID withPassword: validPassword).! !
+
+!StoreManagerTests methodsFor: 'as yet unclassified' stamp: 'FL 2/22/2021 19:05:41'!
+test02
+	
+	| currentAuthenticator |
+	currentAuthenticator := Authenticator forUsers: (Dictionary with: validUserID->validPassword).
+	
+	self deny: (currentAuthenticator validateId: validUserID withPassword: invalidPassword).! !
+
+!StoreManagerTests methodsFor: 'as yet unclassified' stamp: 'FL 2/22/2021 19:05:03'!
+test03
+	
+	| currentAuthenticator |
+	currentAuthenticator := Authenticator forUsers: (Dictionary with: validUserID->validPassword).
+	
+	self deny: (currentAuthenticator validateId: invalidUserID withPassword: validPassword).! !
+
+!StoreManagerTests methodsFor: 'as yet unclassified' stamp: 'FL 2/22/2021 20:34:46'!
+test04
+	
+	| currentManager createdCartId |
+	currentManager := self makeManager.
+	createdCartId := currentManager createCartForId: validUserID withPassword: validPassword.
+	
+	self assert: 1 equals: createdCartId.! !
+
+!StoreManagerTests methodsFor: 'as yet unclassified' stamp: 'FL 2/22/2021 19:08:05'!
+test05
+	
+	| currentManager |
+	currentManager := self makeManager.
+	
+	self
+		should: [currentManager createCartForId: invalidUserID withPassword: invalidPassword.]
+		raise: Error - MessageNotUnderstood
+		withExceptionDo: [:anError |
+			self assert: StoreManager invalidIdOrPasswordErrorMessage equals: anError messageText.
+		].! !
+
+!StoreManagerTests methodsFor: 'as yet unclassified' stamp: 'FL 2/22/2021 19:20:38'!
+test06
+	
+	| currentManager firstCreatedCartId secondCreatedCartId |
+	currentManager := self makeManager.
+	firstCreatedCartId := currentManager createCartForId: validUserID withPassword: validPassword.
+	secondCreatedCartId := currentManager createCartForId: validUserID withPassword: validPassword.
+	
+	self assert: 1 equals: firstCreatedCartId.
+	self assert: 2 equals: secondCreatedCartId.! !
+
+!StoreManagerTests methodsFor: 'as yet unclassified' stamp: 'FL 2/22/2021 20:38:47'!
+test07
+	
+	| currentManager createdCartId retrievedCart |
+	currentManager := self makeManager.
+	createdCartId := currentManager createCartForId: validUserID withPassword: validPassword.
+	retrievedCart := currentManager getCartAtId: createdCartId.
+	
+	self assert: (retrievedCart isKindOf: ShoppingCart).
+	self assert: #() equals: retrievedCart allBooks.! !
+
+!StoreManagerTests methodsFor: 'as yet unclassified' stamp: 'FL 2/22/2021 20:41:47'!
+test08
+	
+	| currentManager |
+	currentManager := self makeManager.
+	
+	self
+		should: [currentManager getCartAtId: 50000.]
+		raise: Error - MessageNotUnderstood
+		withExceptionDo: [:anError |
+			self assert: StoreManager cartIdDoesNotExistErrorMessage equals: anError messageText.
+		].! !
+
+!StoreManagerTests methodsFor: 'as yet unclassified' stamp: 'FL 2/22/2021 20:49:53'!
+test09
+	
+	| currentManager createdCartId retrievedCart |
+	currentManager := self makeManager.
+	createdCartId := currentManager createCartForId: validUserID withPassword: validPassword.
+	
+	currentManager addToCartId: createdCartId theBookIsbn: includedBook1 forTheQuantity: 1.
+	retrievedCart := currentManager getCartAtId: createdCartId.
+	
+	self assert: (Array with: includedBook1) equals: retrievedCart allBooks.
+	self assert: 1 equals: (retrievedCart amountOf: includedBook1).! !
+
+!StoreManagerTests methodsFor: 'as yet unclassified' stamp: 'FL 2/22/2021 20:55:14'!
+test10
+	
+	| currentManager createdCartId |
+	currentManager := self makeManager.
+	createdCartId := currentManager createCartForId: validUserID withPassword: validPassword.
+	
+	self
+		should: [currentManager addToCartId: createdCartId theBookIsbn: includedBook1 forTheQuantity: 0.]
+		raise: Error - MessageNotUnderstood. "All errors are handled in ShoppingCartTests"! !
+
+!StoreManagerTests methodsFor: 'as yet unclassified' stamp: 'FL 2/22/2021 21:05:58'!
+test11
+	
+	| currentManager |
+	currentManager := self makeManager.
+	
+	self
+		should: [currentManager addToCartId: 50000 theBookIsbn: includedBook1 forTheQuantity: 1.]
+		raise: Error - MessageNotUnderstood
+		withExceptionDo: [:anError |
+			self assert: StoreManager cartIdDoesNotExistErrorMessage equals: anError messageText.
+		].! !
+
+!StoreManagerTests methodsFor: 'as yet unclassified' stamp: 'FL 2/22/2021 21:15:58'!
+test12
+	
+	| currentManager createdCartId expectedCartList retrievedCartList |
+	currentManager := self makeManager.
+	createdCartId := currentManager createCartForId: validUserID withPassword: validPassword.
+	
+	retrievedCartList := currentManager listCartId: createdCartId.
+	expectedCartList := Dictionary new.
+	self assert: expectedCartList equals: retrievedCartList.
+	! !
+
+!StoreManagerTests methodsFor: 'as yet unclassified' stamp: 'FL 2/22/2021 21:11:38'!
+test13
+	
+	| currentManager createdCartId expectedCartList retrievedCartList |
+	currentManager := self makeManager.
+	createdCartId := currentManager createCartForId: validUserID withPassword: validPassword.
+	
+	currentManager addToCartId: createdCartId theBookIsbn: includedBook1 forTheQuantity: 1.
+	
+	retrievedCartList := currentManager listCartId: createdCartId.
+	expectedCartList := Dictionary with: includedBook1->1.
+	self assert: expectedCartList equals: retrievedCartList.! !
+
+!StoreManagerTests methodsFor: 'as yet unclassified' stamp: 'FL 2/22/2021 21:14:40'!
+test14
+	
+	| currentManager createdCartId expectedCartList retrievedCartList |
+	currentManager := self makeManager.
+	createdCartId := currentManager createCartForId: validUserID withPassword: validPassword.
+	
+	currentManager addToCartId: createdCartId theBookIsbn: includedBook1 forTheQuantity: 3.
+	currentManager addToCartId: createdCartId theBookIsbn: includedBook2 forTheQuantity: 5.
+	
+	retrievedCartList := currentManager listCartId: createdCartId.
+	expectedCartList := Dictionary with: includedBook1->3 with: includedBook2->5.
+	self assert: expectedCartList equals: retrievedCartList.! !
+
+
+!classDefinition: #Authenticator category: 'TusLibros'!
+Object subclass: #Authenticator
+	instanceVariableNames: 'users'
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'TusLibros'!
+
+!Authenticator methodsFor: 'initialization' stamp: 'FL 2/22/2021 18:31:51'!
+initializeForUsers: anUserCollection 
+
+	users := anUserCollection.! !
+
+
+!Authenticator methodsFor: 'as yet unclassified' stamp: 'FL 2/22/2021 19:16:28'!
+ifInvalidId: aCustomerId withPassword: aPassword do: aClosure
+
+	(self validateId: aCustomerId withPassword: aPassword) ifFalse: aClosure. ! !
+
+!Authenticator methodsFor: 'as yet unclassified' stamp: 'FL 2/22/2021 18:36:15'!
+validateId: anId withPassword: aPassword 
+
+	| userPassword |
+	userPassword := users at: anId ifAbsent: [^false].
+	^userPassword = aPassword.! !
+
+"-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
+
+!classDefinition: 'Authenticator class' category: 'TusLibros'!
+Authenticator class
+	instanceVariableNames: ''!
+
+!Authenticator class methodsFor: 'as yet unclassified' stamp: 'FL 2/22/2021 18:31:06'!
+forUsers: anUserCollection 
+	
+	^self new initializeForUsers: anUserCollection.! !
 
 
 !classDefinition: #BookStore category: 'TusLibros'!
@@ -735,12 +992,12 @@ initializeForStore: aStore
 	associatedStore := aStore.! !
 
 
-!ShoppingCart methodsFor: 'contents' stamp: 'FL 2/18/2021 23:29:38'!
+!ShoppingCart methodsFor: 'contents' stamp: 'FL 2/22/2021 21:02:45'!
 addBook: aBookISBN thisManyTimes: aQuantity 
 	
 	| newQuantity |
 	
-	(aQuantity positive) ifFalse: [self error: self class invalidQuantityErrorMessage].
+	(aQuantity strictlyPositive and: [aQuantity isInteger]) ifFalse: [self error: self class invalidQuantityErrorMessage].
 	
 	associatedStore reduceStockOf: aBookISBN by: aQuantity.
 	newQuantity := (containedBooks at: aBookISBN ifAbsent: 0) + aQuantity.
@@ -811,3 +1068,88 @@ emptyCartCheckoutErrorMessage
 invalidQuantityErrorMessage
 	
 	^'Invalid quantity, should be 1 or greater.'! !
+
+
+!classDefinition: #StoreManager category: 'TusLibros'!
+Object subclass: #StoreManager
+	instanceVariableNames: 'associatedStore associatedAuthenticator allCarts bookStore authenticator timeBase'
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'TusLibros'!
+
+!StoreManager methodsFor: 'initialization' stamp: 'FL 2/22/2021 21:30:12'!
+initializeForStore: aBookStore withAuthenticator: anAuthenticator usingTime: aTimeClass 
+
+	associatedStore := aBookStore.
+	associatedAuthenticator := anAuthenticator.
+	timeBase := aTimeClass.
+	allCarts := OrderedCollection new.
+	! !
+
+
+!StoreManager methodsFor: 'as yet unclassified' stamp: 'FL 2/22/2021 20:51:47'!
+addToCartId: aCartId theBookIsbn: aBookISBN forTheQuantity: aQuantity
+ 
+	| appropiateCart |
+	appropiateCart := self getCartAtId: aCartId.
+	appropiateCart addBook: aBookISBN thisManyTimes: aQuantity.! !
+
+!StoreManager methodsFor: 'as yet unclassified' stamp: 'FL 2/22/2021 19:15:44'!
+createCartForId: aCustomerId withPassword: aPassword
+
+	associatedAuthenticator ifInvalidId: aCustomerId withPassword: aPassword do: [self error: self class invalidIdOrPasswordErrorMessage].
+	
+	allCarts add: (self newCartForId: aCustomerId).
+	^allCarts size.! !
+
+!StoreManager methodsFor: 'as yet unclassified' stamp: 'FL 2/22/2021 20:44:03'!
+getCartAtId: aCartId
+
+	| retrievedCartInfo |
+	retrievedCartInfo := allCarts at: aCartId ifAbsent: [self error: self class cartIdDoesNotExistErrorMessage.].
+	^retrievedCartInfo at: #cart.! !
+
+!StoreManager methodsFor: 'as yet unclassified' stamp: 'FL 2/22/2021 21:18:39'!
+listCartId: aCartId 
+	
+	| cartContents currentCart |
+	currentCart := self getCartAtId: aCartId.
+	
+	cartContents := Dictionary new.
+	currentCart allBooks do: [:aBookISBN |
+		cartContents at: aBookISBN put: (currentCart amountOf: aBookISBN).
+	].
+
+	^cartContents.
+	! !
+
+!StoreManager methodsFor: 'as yet unclassified' stamp: 'FL 2/22/2021 21:32:08'!
+newCartForId: aCustomerID
+ 
+	^Dictionary new
+		add: #cart->(ShoppingCart forStore: associatedStore);
+		add: #valid->true;
+		add: #lastUsedTime->timeBase now;
+		yourself.! !
+
+"-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
+
+!classDefinition: 'StoreManager class' category: 'TusLibros'!
+StoreManager class
+	instanceVariableNames: ''!
+
+!StoreManager class methodsFor: 'instance creation' stamp: 'FL 2/22/2021 21:28:43'!
+forStore: aBookStore withAuthenticator: anAuthenticator usingTime: aTimeClass 
+
+	^self new initializeForStore: aBookStore withAuthenticator: anAuthenticator usingTime: aTimeClass.! !
+
+
+!StoreManager class methodsFor: 'as yet unclassified' stamp: 'FL 2/22/2021 20:42:12'!
+cartIdDoesNotExistErrorMessage
+	
+	^'Cart ID does not exist.'! !
+
+!StoreManager class methodsFor: 'as yet unclassified' stamp: 'FL 2/22/2021 18:50:39'!
+invalidIdOrPasswordErrorMessage
+	
+	^'Invalid ID or password.'! !
