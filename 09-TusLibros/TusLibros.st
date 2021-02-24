@@ -142,6 +142,45 @@ makeStore
 		withPrices: (Dictionary with: includedBook->includedBookPrice).! !
 
 
+!classDefinition: #FakeTimeTests category: 'TusLibros'!
+TestCase subclass: #FakeTimeTests
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'TusLibros'!
+
+!FakeTimeTests methodsFor: 'as yet unclassified' stamp: 'FL 2/24/2021 18:38:22'!
+test01
+	
+	| expectedNow testTime |
+	testTime := FakeTime hour: 12 minute: 30 second: 15.
+	expectedNow := Time hour: 12 minute: 30 second: 15.
+	
+	self assert: expectedNow equals: testTime now.! !
+
+!FakeTimeTests methodsFor: 'as yet unclassified' stamp: 'FL 2/24/2021 19:35:53'!
+test02
+	
+	| expectedNow testTime |
+	testTime := FakeTime hour: 12 minute: 30 second: 15.
+	expectedNow := Time hour: 13 minute: 00 second: 15.
+	
+	testTime advanceForwards: (Duration minutes: 30).
+	
+	self assert: expectedNow equals: testTime now.! !
+
+!FakeTimeTests methodsFor: 'as yet unclassified' stamp: 'FL 2/24/2021 19:38:49'!
+test03
+	
+	| expectedNow testTime |
+	testTime := FakeTime hour: 12 minute: 30 second: 15.
+	expectedNow := Time hour: 12 minute: 00 second: 15.
+	
+	testTime advanceBackwards: (Duration minutes: 30).
+	
+	self assert: expectedNow equals: testTime now.! !
+
+
 !classDefinition: #MerchantAndCheckoutTests category: 'TusLibros'!
 TestCase subclass: #MerchantAndCheckoutTests
 	instanceVariableNames: 'bookPrice bookId'
@@ -539,12 +578,17 @@ TO-DO:
 !
 
 
-!StoreManagerTests methodsFor: 'as yet unclassified' stamp: 'FL 2/22/2021 21:27:52'!
+!StoreManagerTests methodsFor: 'as yet unclassified' stamp: 'FL 2/24/2021 18:59:54'!
 makeManager
+	
+	^self makeManagerForTime: Time.! !
+
+!StoreManagerTests methodsFor: 'as yet unclassified' stamp: 'FL 2/24/2021 18:59:39'!
+makeManagerForTime: aTimeBase
 	
 	| currentAuthenticator |
 	currentAuthenticator := Authenticator forUsers: (Dictionary with: validUserID->validPassword).
-	^StoreManager forStore: testStore withAuthenticator: currentAuthenticator usingTime: Time.! !
+	^StoreManager forStore: testStore withAuthenticator: currentAuthenticator usingTime: aTimeBase.! !
 
 !StoreManagerTests methodsFor: 'as yet unclassified' stamp: 'FL 2/22/2021 19:05:26'!
 setUp
@@ -717,6 +761,47 @@ test14
 	expectedCartList := Dictionary with: includedBook1->3 with: includedBook2->5.
 	self assert: expectedCartList equals: retrievedCartList.! !
 
+!StoreManagerTests methodsFor: 'as yet unclassified' stamp: 'FL 2/24/2021 18:58:14'!
+test15
+	
+	| currentManager createdCartId |
+	currentManager := self makeManager.
+	createdCartId := currentManager createCartForId: validUserID withPassword: validPassword.
+	
+	self assert: (currentManager isCartValid: createdCartId).! !
+
+!StoreManagerTests methodsFor: 'as yet unclassified' stamp: 'FL 2/24/2021 19:40:24'!
+test16
+	
+	| createdCartId currentFakeTime currentManager |
+	currentFakeTime := FakeTime hour: 12 minute: 20 second: 0.
+	currentManager := self makeManagerForTime: currentFakeTime.
+	createdCartId := currentManager createCartForId: validUserID withPassword: validPassword.
+	
+	self assert: (currentManager isCartValid: createdCartId).
+	currentFakeTime advanceForwards: (Duration minutes: 45).
+	self deny: (currentManager isCartValid: createdCartId).
+	
+	! !
+
+!StoreManagerTests methodsFor: 'as yet unclassified' stamp: 'FL 2/24/2021 19:52:28'!
+test17
+	
+	| createdCartId currentFakeTime currentManager |
+	currentFakeTime := FakeTime hour: 12 minute: 20 second: 0.
+	currentManager := self makeManagerForTime: currentFakeTime.
+	createdCartId := currentManager createCartForId: validUserID withPassword: validPassword.
+	
+	self assert: (currentManager isCartValid: createdCartId).
+	
+	currentFakeTime advanceForwards: (Duration minutes: 20).
+	currentManager addToCartId: createdCartId theBookIsbn: includedBook1 forTheQuantity: 1.
+	currentFakeTime advanceForwards: (Duration minutes: 20).
+	
+	self assert: (currentManager isCartValid: createdCartId).
+	
+	! !
+
 
 !classDefinition: #Authenticator category: 'TusLibros'!
 Object subclass: #Authenticator
@@ -870,6 +955,54 @@ notIncludedPriceChangeError
 priceNotAvailableError
 	
 	^'Price for book asked not found.'! !
+
+
+!classDefinition: #FakeTime category: 'TusLibros'!
+Object subclass: #FakeTime
+	instanceVariableNames: 'currentTime'
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'TusLibros'!
+
+!FakeTime methodsFor: 'initialization' stamp: 'FL 2/24/2021 18:33:36'!
+initializeHour: anHour minute: aMinute second: aSecond 
+
+	currentTime := Time hour: anHour minute: aMinute second: aSecond.! !
+
+
+!FakeTime methodsFor: 'as yet unclassified' stamp: 'FL 2/24/2021 19:38:04'!
+addHours: anHour minutes: aMinute seconds: aSecond 
+	
+	currentTime := Time
+		hour: currentTime hour24 + anHour
+		minute: currentTime minute + aMinute
+		second: currentTime second + aSecond.! !
+
+!FakeTime methodsFor: 'as yet unclassified' stamp: 'FL 2/24/2021 19:38:15'!
+advanceBackwards: aDuration 
+	
+	self addHours: aDuration hours negated minutes: aDuration minutes negated seconds: aDuration seconds negated.! !
+
+!FakeTime methodsFor: 'as yet unclassified' stamp: 'FL 2/24/2021 19:38:24'!
+advanceForwards: aDuration 
+	
+	self addHours: aDuration hours minutes: aDuration minutes seconds: aDuration seconds.! !
+
+!FakeTime methodsFor: 'as yet unclassified' stamp: 'FL 2/24/2021 18:33:50'!
+now
+	
+	^currentTime copy.! !
+
+"-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
+
+!classDefinition: 'FakeTime class' category: 'TusLibros'!
+FakeTime class
+	instanceVariableNames: ''!
+
+!FakeTime class methodsFor: 'instance creation' stamp: 'FL 2/24/2021 18:30:37'!
+hour: anHour minute: aMinute second: aSecond 
+
+	^self new initializeHour: anHour minute: aMinute second: aSecond. ! !
 
 
 !classDefinition: #MerchantFake category: 'TusLibros'!
@@ -1072,27 +1205,30 @@ invalidQuantityErrorMessage
 
 !classDefinition: #StoreManager category: 'TusLibros'!
 Object subclass: #StoreManager
-	instanceVariableNames: 'associatedStore associatedAuthenticator allCarts bookStore authenticator timeBase'
+	instanceVariableNames: 'associatedStore associatedAuthenticator allCarts bookStore authenticator timeBase cartTimeLimit'
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'TusLibros'!
 
-!StoreManager methodsFor: 'initialization' stamp: 'FL 2/22/2021 21:30:12'!
+!StoreManager methodsFor: 'initialization' stamp: 'FL 2/24/2021 19:29:25'!
 initializeForStore: aBookStore withAuthenticator: anAuthenticator usingTime: aTimeClass 
 
 	associatedStore := aBookStore.
 	associatedAuthenticator := anAuthenticator.
 	timeBase := aTimeClass.
 	allCarts := OrderedCollection new.
+	cartTimeLimit := Duration minutes: 30.
 	! !
 
 
-!StoreManager methodsFor: 'as yet unclassified' stamp: 'FL 2/22/2021 20:51:47'!
+!StoreManager methodsFor: 'as yet unclassified' stamp: 'FL 2/24/2021 19:53:24'!
 addToCartId: aCartId theBookIsbn: aBookISBN forTheQuantity: aQuantity
  
 	| appropiateCart |
 	appropiateCart := self getCartAtId: aCartId.
-	appropiateCart addBook: aBookISBN thisManyTimes: aQuantity.! !
+	appropiateCart addBook: aBookISBN thisManyTimes: aQuantity.
+	
+	(self getCartInfo: aCartId) at: #lastTimeUsed put: timeBase now.! !
 
 !StoreManager methodsFor: 'as yet unclassified' stamp: 'FL 2/22/2021 19:15:44'!
 createCartForId: aCustomerId withPassword: aPassword
@@ -1102,12 +1238,26 @@ createCartForId: aCustomerId withPassword: aPassword
 	allCarts add: (self newCartForId: aCustomerId).
 	^allCarts size.! !
 
-!StoreManager methodsFor: 'as yet unclassified' stamp: 'FL 2/22/2021 20:44:03'!
+!StoreManager methodsFor: 'as yet unclassified' stamp: 'FL 2/24/2021 19:10:23'!
 getCartAtId: aCartId
 
-	| retrievedCartInfo |
-	retrievedCartInfo := allCarts at: aCartId ifAbsent: [self error: self class cartIdDoesNotExistErrorMessage.].
-	^retrievedCartInfo at: #cart.! !
+	^(self getCartInfo: aCartId) at: #cart.! !
+
+!StoreManager methodsFor: 'as yet unclassified' stamp: 'FL 2/24/2021 19:10:05'!
+getCartInfo: aCartId
+
+	^allCarts at: aCartId ifAbsent: [self error: self class cartIdDoesNotExistErrorMessage.].! !
+
+!StoreManager methodsFor: 'as yet unclassified' stamp: 'FL 2/24/2021 19:10:34'!
+invalidateCartId: aCartId
+
+	(self getCartInfo: aCartId) at: #valid put: false.! !
+
+!StoreManager methodsFor: 'as yet unclassified' stamp: 'FL 2/24/2021 19:41:10'!
+isCartValid: aCartId
+
+	self updateCartValidness.
+	^(self getCartInfo: aCartId) at: #valid.! !
 
 !StoreManager methodsFor: 'as yet unclassified' stamp: 'FL 2/22/2021 21:18:39'!
 listCartId: aCartId 
@@ -1123,14 +1273,26 @@ listCartId: aCartId
 	^cartContents.
 	! !
 
-!StoreManager methodsFor: 'as yet unclassified' stamp: 'FL 2/22/2021 21:32:08'!
+!StoreManager methodsFor: 'as yet unclassified' stamp: 'FL 2/24/2021 19:26:05'!
 newCartForId: aCustomerID
  
 	^Dictionary new
 		add: #cart->(ShoppingCart forStore: associatedStore);
 		add: #valid->true;
-		add: #lastUsedTime->timeBase now;
+		add: #lastTimeUsed->timeBase now;
 		yourself.! !
+
+!StoreManager methodsFor: 'as yet unclassified' stamp: 'FL 2/24/2021 19:49:46'!
+updateCartValidness
+
+	| cartsToInvalidate |
+	cartsToInvalidate := allCarts reject: [:aCartInfo |
+		| cartTime |
+		cartTime := aCartInfo at: #lastTimeUsed.
+		(aCartInfo at: #valid) and: [timeBase now - cartTime < cartTimeLimit].
+	].
+
+	cartsToInvalidate do: [:aCartInfo | aCartInfo at: #valid put: false].! !
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
@@ -1148,6 +1310,11 @@ forStore: aBookStore withAuthenticator: anAuthenticator usingTime: aTimeClass
 cartIdDoesNotExistErrorMessage
 	
 	^'Cart ID does not exist.'! !
+
+!StoreManager class methodsFor: 'as yet unclassified' stamp: 'FL 2/24/2021 18:16:57'!
+forStore: aBookStore withAuthenticator: anAuthenticator 
+	
+	^self forStore: aBookStore withAuthenticator: anAuthenticator usingTime: Time.! !
 
 !StoreManager class methodsFor: 'as yet unclassified' stamp: 'FL 2/22/2021 18:50:39'!
 invalidIdOrPasswordErrorMessage
